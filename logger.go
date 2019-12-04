@@ -14,6 +14,8 @@ type Logger struct {
 	mu  sync.Mutex
 }
 
+var m logger.Fields
+
 func New() (logger logger.FieldLogger) {
 	return Logger{Out: os.Stderr, mu: sync.Mutex{}}
 
@@ -84,4 +86,35 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	defer log.mu.Unlock()
 	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
 
+}
+
+func (log *Logger) WithField(key string, value interface{}) *Logger {
+	if len(key) == 0 {
+		return log
+	}
+
+	l := log.clone()
+	l.Out = l.WithField(key, value)
+	return l
+
+	l = log.clone()
+
+	return log
+}
+
+func (log *Logger) WithFields(fields logger.Fields) *Logger {
+	if len(fields) == 0 {
+		return log
+	}
+	fmt.Print(len(fields))
+
+	l := log.clone()
+	l.Out= l.WithFields(fields)
+
+	return l
+}
+
+func (log *Logger) clone() *Logger {
+	copy := *log
+	return &copy
 }
