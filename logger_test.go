@@ -11,7 +11,6 @@ import (
 
 func TestLogger(t *testing.T) {
 	a := assert.New(t)
-
 	testData := []byte("test")
 	buferSize := 4
 	buf := bytes.Buffer{}
