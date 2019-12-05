@@ -132,17 +132,13 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 }
 
 func (log *Logger) WithField(key string, value interface{}) *Logger {
-	if len(key) == 0 {
+	if len(key) == 0 || len(key) == 0 {
 		return log
 	}
-
 	l := log.clone()
-	l.Out = l.WithField(key, value)
+
+	l.core = l.core.With([]Field{{Key: key, Value: value}})
 	return l
-
-	l = log.clone()
-
-	return log
 }
 
 func (log *Logger) WithFields(fields logger.Fields) *Logger {
