@@ -9,12 +9,55 @@ import (
 	"github.com/nori-io/nori-common/logger"
 )
 
+type Core interface {
+	//LevelEnabler
+
+	// With adds structured context to the Core.
+	With([]Field) Core
+	/*	// Check determines whether the supplied Entry should be logged (using the
+		// embedded LevelEnabler and possibly some extra logic). If the entry
+		// should be logged, the Core adds itself to the CheckedEntry and returns
+		// the result.
+		//
+		// Callers must use Check before calling Write.
+		Check(Entry, *CheckedEntry) *CheckedEntry
+		// Write serializes the Entry and any Fields supplied at the log site and
+		// writes them to their destination.
+		//
+		// If called, Write should always log the Entry and Fields; it should not
+		// replicate the logic of Check.
+		Write(Entry, []Field) error
+		// Sync flushes buffered logs (if any).
+		Sync() error*/
+}
+type WriteSyncer interface {
+	io.Writer
+	Sync() error
+}
+
+type Field struct {
+	Key   string
+	Value interface{}
+}
+
+type FieldType uint8
+
 type Logger struct {
-	Out io.Writer
-	mu  sync.Mutex
+	Out  io.Writer
+	mu   sync.Mutex
+	core Core
 }
 
 var m logger.Fields
+
+type ioCore struct {
+	LevelEnabler
+	key   string
+	value interface{}
+}
+type LevelEnabler interface {
+	Enabled(logger logger.Level) bool
+}
 
 func New() (logger logger.FieldLogger) {
 	return Logger{Out: os.Stderr, mu: sync.Mutex{}}
@@ -109,7 +152,7 @@ func (log *Logger) WithFields(fields logger.Fields) *Logger {
 	fmt.Print(len(fields))
 
 	l := log.clone()
-	l.Out= l.WithFields(fields)
+	l.Out = l.WithFields(fields)
 
 	return l
 }
@@ -117,4 +160,14 @@ func (log *Logger) WithFields(fields logger.Fields) *Logger {
 func (log *Logger) clone() *Logger {
 	copy := *log
 	return &copy
+}
+
+func (c *ioCore) With(fields []Field) Core {
+	clone := c
+	for i := 1; i < len(fields); i++ {
+		clone.key = fields[i].Key
+		clone.value = fields[i].Value
+	}
+
+	return clone
 }
