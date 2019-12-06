@@ -16,7 +16,8 @@ func TestLogger(t *testing.T) {
 	buferSize := 4
 	buf := bytes.Buffer{}
 	log := logger.Logger{
-		Out: &buf,
+		Out:  &buf,
+		Core: &logger.IoCore{},
 	}
 
 	log.Write([]byte(testData))
@@ -76,12 +77,7 @@ func TestLogger(t *testing.T) {
 
 	log.Warning("%s", []byte(testData))
 	_, err = buf.Read(result)
-	a.Equal(testData, result)
-	a.NoError(err)
-	buf.Reset()
-
-	log.WithField("1", "test")
-	_, err = buf.Read(result)
+	fmt.Println(result)
 	a.Equal(testData, result)
 	a.NoError(err)
 	buf.Reset()
@@ -91,10 +87,11 @@ func TestLogger(t *testing.T) {
 	m["test"] = "1"
 	m["test2"] = "2"
 
-	log.WithFields(m)
-	_, err = buf.Read(result)
+	log.With(m)
+	fmt.Println("log.Out", log.Out)
 
-	fmt.Println("result", result)
+	fmt.Println(result)
+	_, err = buf.Read(result)
 	a.Equal(testData, result)
 	a.NoError(err)
 	buf.Reset()

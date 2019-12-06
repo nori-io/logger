@@ -9,33 +9,23 @@ import (
 	"github.com/nori-io/nori-common/logger"
 )
 
+type Field struct {
+	Key   string
+	Value interface{}
+}
 type Core interface {
 	With([]Field) Core
 }
-type WriteSyncer interface {
-	io.Writer
-	Sync() error
-}
-
-type Field struct {
-	Key   string
-	Value string
-}
-
-type FieldType uint8
 
 type Logger struct {
 	Out  io.Writer
 	mu   sync.Mutex
-	core Core
+	Core Core
+	//	Formatter logrus.Formatter
 }
 
-var m logger.Fields
-
-type ioCore struct {
-	LevelEnabler
-	key   string
-	value interface{}
+type IoCore struct {
+	fields []Field
 }
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
@@ -43,7 +33,6 @@ type LevelEnabler interface {
 
 func New() (logger logger.FieldLogger) {
 	return Logger{Out: os.Stderr, mu: sync.Mutex{}}
-
 }
 
 // Fatal
@@ -113,29 +102,20 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 }
 
-func (log *Logger) WithField(key string, value string) *Logger {
-	if len(key) == 0 || len(key) == 0 {
-		return log
-	}
-	l := log.clone()
-
-	fields:=[]Field{
-		{key, value},
-	}
-
-	l.core = l.core.With(fields)
-	return l
-}
-
-func (log *Logger) WithFields(fields logger.Fields) *Logger {
+func (log *Logger) With(fields logger.Fields) *Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	fmt.Print(len(fields))
-
 	l := log.clone()
-	l.Out = l.WithFields(fields)
+	var fieldsTemp []Field
 
+	fmt.Println(fields)
+	for key, value := range fields {
+		fieldsTemp = append(fieldsTemp, Field{Key: key, Value: value})
+		delete(fields, key)
+
+	}
+	l.Core.With(fieldsTemp)
 	return l
 }
 
@@ -144,12 +124,8 @@ func (log *Logger) clone() *Logger {
 	return &copy
 }
 
-func (c *ioCore) With(fields []Field) Core {
+func (c *IoCore) With(fields []Field) Core {
 	clone := c
-	for i := 1; i < len(fields); i++ {
-		clone.key = fields[i].Key
-		clone.value = fields[i].Value
-	}
-
+	clone.fields = append(clone.fields, fields...)
 	return clone
 }
