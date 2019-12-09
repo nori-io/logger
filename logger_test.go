@@ -87,7 +87,7 @@ func TestLogger(t *testing.T) {
 	m["test"] = "1"
 	m["test2"] = "2"
 
-	log.With(m)
+	log.With()
 	fmt.Println("log.Out", log.Out)
 
 	fmt.Println(result)

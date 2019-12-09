@@ -9,12 +9,8 @@ import (
 	"github.com/nori-io/nori-common/logger"
 )
 
-type Field struct {
-	Key   string
-	Value interface{}
-}
 type Core interface {
-	With([]Field) Core
+	With(...logger.Field) Core
 }
 
 type Logger struct {
@@ -25,7 +21,7 @@ type Logger struct {
 }
 
 type IoCore struct {
-	fields []Field
+	fields []logger.Field
 }
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
@@ -102,20 +98,14 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 }
 
-func (log *Logger) With(fields logger.Fields) *Logger {
+func (log *Logger) With(fields ...logger.Field) *Logger {
 	if len(fields) == 0 {
 		return log
 	}
 	l := log.clone()
-	var fieldsTemp []Field
 
-	fmt.Println(fields)
-	for key, value := range fields {
-		fieldsTemp = append(fieldsTemp, Field{Key: key, Value: value})
-		delete(fields, key)
+	l.Core.With(fields...)
 
-	}
-	l.Core.With(fieldsTemp)
 	return l
 }
 
@@ -124,7 +114,7 @@ func (log *Logger) clone() *Logger {
 	return &copy
 }
 
-func (c *IoCore) With(fields []Field) Core {
+func (c *IoCore) With(fields ...logger.Field) Core {
 	clone := c
 	clone.fields = append(clone.fields, fields...)
 	return clone
