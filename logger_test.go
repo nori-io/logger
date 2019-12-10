@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
+
+	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 )
 
 func TestLogger(t *testing.T) {
@@ -82,18 +84,21 @@ func TestLogger(t *testing.T) {
 	a.NoError(err)
 	buf.Reset()
 
-	var m map[string]interface{}
-	m = make(map[string]interface{})
-	m["test"] = "1"
-	m["test2"] = "2"
+	//testFields := []loggerNoriCommon.Field{loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"}}
+	log.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 
-	log.With()
-	fmt.Println("log.Out", log.Out)
+	log.Warning("%s", "testWarning")
 
-	fmt.Println(result)
 	_, err = buf.Read(result)
-	a.Equal(testData, result)
-	a.NoError(err)
+	fmt.Println("result is", string(result))
+	fmt.Println("log.Core", log.Core)
+	//	a.Equal(testFields, log.Core)
+	//	a.NoError(err)
 	buf.Reset()
+
+}
+
+func TestFormatter(t *testing.T) {
+	formatter := &logger.JSONFormatter{}
 
 }

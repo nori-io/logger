@@ -14,10 +14,12 @@ type Core interface {
 }
 
 type Logger struct {
-	Out  io.Writer
-	mu   sync.Mutex
-	Core Core
-	//	Formatter logrus.Formatter
+	Out       io.Writer
+	mu        sync.Mutex
+	Core      Core
+	Formatter JSONFormatter
+	Hooks LevelHooks
+
 }
 
 type IoCore struct {
@@ -83,13 +85,6 @@ func (log Logger) Printf(format string, opts ...interface{}) {
 	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
 }
 
-// Write push to log entry with debug level
-func (log Logger) Write(p []byte) (n int, err error) {
-	log.mu.Lock()
-	defer log.mu.Unlock()
-	return log.Out.Write(p)
-}
-
 // Log push to log with specified level
 func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.mu.Lock()
@@ -119,3 +114,4 @@ func (c *IoCore) With(fields ...logger.Field) Core {
 	clone.fields = append(clone.fields, fields...)
 	return clone
 }
+
