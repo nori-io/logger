@@ -9,7 +9,7 @@ import "github.com/nori-io/nori-common/logger"
 // the logging calls for levels returned from `Levels()` to block.
 type Hook interface {
 	Levels() []logger.Level
-	Fire(*Entry) error
+	Fire(field *[]logger.Field) error
 }
 
 // Internal type for storing the hooks on a logger instance.
@@ -25,9 +25,9 @@ func (hooks LevelHooks) Add(hook Hook) {
 
 // Fire all the hooks for the passed level. Used by `entry.log` to fire
 // appropriate hooks for a log entry.
-func (hooks LevelHooks) Fire(level logger.Level, entry *Entry) error {
+func (hooks LevelHooks) Fire(level logger.Level, log *[]logger.Field) error {
 	for _, hook := range hooks[level] {
-		if err := hook.Fire(entry); err != nil {
+		if err := hook.Fire(log); err != nil {
 			return err
 		}
 	}

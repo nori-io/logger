@@ -14,7 +14,7 @@ import (
 
 func TestLogger(t *testing.T) {
 	a := assert.New(t)
-	testData := []byte("test")
+	testData := "test"
 	buferSize := 4
 	buf := bytes.Buffer{}
 	log := logger.Logger{
@@ -22,7 +22,7 @@ func TestLogger(t *testing.T) {
 		Core: &logger.IoCore{},
 	}
 
-	log.Write([]byte(testData))
+	log.Log(loggerNoriCommon.LevelInfo,testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
 	a.Equal(testData, result)
@@ -99,6 +99,6 @@ func TestLogger(t *testing.T) {
 }
 
 func TestFormatter(t *testing.T) {
-	formatter := &logger.JSONFormatter{}
+	//formatter := &logger.JSONFormatter{}
 
 }

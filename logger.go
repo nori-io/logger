@@ -14,12 +14,12 @@ type Core interface {
 }
 
 type Logger struct {
-	Out       io.Writer
-	mu        sync.Mutex
-	Core      Core
-	Formatter JSONFormatter
-	Hooks LevelHooks
-
+	Out          io.Writer
+	mu           sync.Mutex
+	Core         Core
+	Formatter    JSONFormatter
+	Hooks        LevelHooks
+	ReportCaller bool
 }
 
 type IoCore struct {
@@ -114,4 +114,3 @@ func (c *IoCore) With(fields ...logger.Field) Core {
 	clone.fields = append(clone.fields, fields...)
 	return clone
 }
-

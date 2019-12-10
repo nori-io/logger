@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	log "github.com/nori-io/nori-common/logger"
 )
 
 type fieldKey string
@@ -47,9 +49,9 @@ type JSONFormatter struct {
 }
 
 // Format renders a single log entry
-func (f *JSONFormatter) Format(entry *Entry) ([]byte, error) {
-	data := make(Fields, len(entry.Data)+4)
-	for k, v := range entry.Data {
+func (f *JSONFormatter) Format(...log.Field) ([]byte, error) {
+	data := make([]log.Field, 3)
+	/*	for k, v := range entry.Data {
 		switch v := v.(type) {
 		case error:
 			// Otherwise errors are ignored by `encoding/json`
@@ -58,40 +60,38 @@ func (f *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 		default:
 			data[k] = v
 		}
-	}
+	}*/
 
 	if f.DataKey != "" {
-		newData := make(Fields, 4)
-		newData[f.DataKey] = data
+		newData := make([]log.Field, 4)
+		//newData[f.DataKey] = data
 		data = newData
 	}
-
-	prefixFieldClashes(data, f.FieldMap, entry.HasCaller())
 
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
 		timestampFormat = defaultTimestampFormat
 	}
 
-	if entry.err != "" {
-		data[f.FieldMap.resolve(FieldKeyLogrusError)] = entry.err
-	}
-	if !f.DisableTimestamp {
-		data[f.FieldMap.resolve(FieldKeyTime)] = entry.Time.Format(timestampFormat)
-	}
-	data[f.FieldMap.resolve(FieldKeyMsg)] = entry.Message
-	data[f.FieldMap.resolve(FieldKeyLevel)] = entry.Level.String()
-	if entry.HasCaller() {
-		data[f.FieldMap.resolve(FieldKeyFunc)] = entry.Caller.Function
-		data[f.FieldMap.resolve(FieldKeyFile)] = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
-	}
+	/*	if entry.err != "" {
+			data[f.FieldMap.resolve(FieldKeyLogrusError)] = entry.err
+		}
+		if !f.DisableTimestamp {
+			data[f.FieldMap.resolve(FieldKeyTime)] = entry.Time.Format(timestampFormat)
+		}
+		//data[f.FieldMap.resolve(FieldKeyMsg)] = log.Message
+		data[f.FieldMap.resolve(FieldKeyLevel)] = logger.Level.String
+		if entry.HasCaller() {
+			data[f.FieldMap.resolve(FieldKeyFunc)] = entry.Caller.Function
+			data[f.FieldMap.resolve(FieldKeyFile)] = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
+		}*/
 
 	var b *bytes.Buffer
-	if entry.Buffer != nil {
-		b = entry.Buffer
-	} else {
-		b = &bytes.Buffer{}
-	}
+	/*if &[]log.Field!=nil {
+		b = log.
+	} else {*/
+	b = &bytes.Buffer{}
+	//}
 
 	encoder := json.NewEncoder(b)
 	if f.PrettyPrint {
