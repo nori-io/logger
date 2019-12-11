@@ -10,7 +10,7 @@ import (
 )
 
 type Core struct {
-	fields []logger.Field
+	Fields []logger.Field
 }
 
 type Logger struct {
@@ -97,9 +97,8 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 
-
-	for _,value:=range log.Core.fields{
-		log.Out.Write([]byte(value.Key+" "+value.Value))
+	for _, value := range log.Core.Fields {
+		log.Out.Write([]byte(value.Key + " " + value.Value))
 	}
 
 	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
@@ -125,7 +124,7 @@ func (log *Logger) clone() *Logger {
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
-	clone.Core.fields = append(clone.Core.fields, fields...)
-	log=clone
+	clone.Core.Fields = append(clone.Core.Fields, fields...)
+	log = clone
 	return log
 }
