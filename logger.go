@@ -9,8 +9,8 @@ import (
 	"github.com/nori-io/nori-common/logger"
 )
 
-type Core interface {
-	With(...logger.Field) Core
+type Core struct {
+	fields []logger.Field
 }
 
 type Logger struct {
@@ -20,17 +20,24 @@ type Logger struct {
 	Formatter    JSONFormatter
 	Hooks        LevelHooks
 	ReportCaller bool
+	//	Fields []logger.Field
+
 }
 
-type IoCore struct {
-	fields []logger.Field
-}
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
 }
 
 func New() (logger logger.FieldLogger) {
-	return Logger{Out: os.Stderr, mu: sync.Mutex{}}
+	return Logger{
+		Out:          os.Stderr,
+		mu:           sync.Mutex{},
+		Core:         Core{},
+		Formatter:    JSONFormatter{},
+		Hooks:        nil,
+		ReportCaller: false,
+		//	Fields:       nil,
+	}
 }
 
 // Fatal
@@ -89,6 +96,12 @@ func (log Logger) Printf(format string, opts ...interface{}) {
 func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
+
+
+	for _,value:=range log.Core.fields{
+		log.Out.Write([]byte(value.Key+" "+value.Value))
+	}
+
 	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
 
 }
@@ -97,9 +110,9 @@ func (log *Logger) With(fields ...logger.Field) *Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	l := log.clone()
 
-	l.Core.With(fields...)
+	With(log, fields...)
+	l := log.clone()
 
 	return l
 }
@@ -109,8 +122,10 @@ func (log *Logger) clone() *Logger {
 	return &copy
 }
 
-func (c *IoCore) With(fields ...logger.Field) Core {
-	clone := c
-	clone.fields = append(clone.fields, fields...)
-	return clone
+func With(log *Logger, fields ...logger.Field) *Logger {
+
+	clone := log
+	clone.Core.fields = append(clone.Core.fields, fields...)
+	log=clone
+	return log
 }

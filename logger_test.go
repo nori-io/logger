@@ -18,11 +18,10 @@ func TestLogger(t *testing.T) {
 	buferSize := 4
 	buf := bytes.Buffer{}
 	log := logger.Logger{
-		Out:  &buf,
-		Core: &logger.IoCore{},
+		Out: &buf,
 	}
 
-	log.Log(loggerNoriCommon.LevelInfo,testData)
+	log.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
 	a.Equal(testData, string(result))
@@ -79,21 +78,21 @@ func TestLogger(t *testing.T) {
 
 	log.Warning("%s", []byte(testData))
 	_, err = buf.Read(result)
-	fmt.Println(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
 	//testFields := []loggerNoriCommon.Field{loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"}}
+	buferSize=20
 	log.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 
-	log.Warning("%s", "testWarning")
+	log.Log(loggerNoriCommon.LevelInfo, "%s", "testWarning")
 
 	_, err = buf.Read(result)
 	fmt.Println("result is", string(result))
-	fmt.Println("log.Core", log.Core)
-		a.Equal(result, log.Core)
-	//	a.NoError(err)
+
+	a.Equal(result, log.Core)
+		a.NoError(err)
 	buf.Reset()
 
 }
