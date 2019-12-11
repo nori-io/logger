@@ -2,7 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -83,32 +82,21 @@ func TestLogger(t *testing.T) {
 	a.NoError(err)
 	buf.Reset()
 
-	//testFields := []loggerNoriCommon.Field{loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"}}
 	buferSize = 25
 	result = make([]byte, buferSize)
-
 	log.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-
-	log.Warning("%s", "testWarning")
-
+	log.Info("%s", "testWarning")
 	_, err = buf.Read(result)
-	fmt.Println("result is", string(result))
-	fmt.Println("log.core.Fields", log.Core.Fields)
-
-	str := ""
-
+	testData = ""
 	for _, value := range log.Core.Fields {
-		str = str + value.Key + " " + value.Value
-
+		testData = testData + value.Key + " " + value.Value
 	}
-	str = str + "testWarning"
-	a.Equal(string(result), str)
+	testData = testData + "testWarning"
+	a.Equal(string(result), testData)
 	a.NoError(err)
 	buf.Reset()
-
 }
 
 func TestFormatter(t *testing.T) {
 	//formatter := &logger.JSONFormatter{}
-
 }
