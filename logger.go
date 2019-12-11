@@ -5,12 +5,15 @@ import (
 	"io"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/nori-io/nori-common/logger"
 )
 
 type Core struct {
 	Fields []logger.Field
+	Time   time.Time
+	Level  logger.Level
 }
 
 type Logger struct {
@@ -97,8 +100,15 @@ func (log Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.mu.Lock()
 	defer log.mu.Unlock()
 
+//	log.Formatter.Format(log.Core.Fields...)
+
+
 	for _, value := range log.Core.Fields {
-		log.Out.Write([]byte(value.Key + " " + value.Value))
+		bytes, err:=log.Formatter.Format(value)
+		if err==nil{
+		log.Out.Write(bytes)}
+		fmt.Println("Format test", string(bytes))
+		//log.Out.Write([]byte(value.Key + " " + value.Value))
 	}
 
 	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
@@ -128,3 +138,4 @@ func With(log *Logger, fields ...logger.Field) *Logger {
 	log = clone
 	return log
 }
+

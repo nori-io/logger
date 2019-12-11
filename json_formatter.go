@@ -21,6 +21,7 @@ func (f FieldMap) resolve(key fieldKey) string {
 	return string(key)
 }
 
+
 // JSONFormatter formats logs into parsable json
 type JSONFormatter struct {
 	// TimestampFormat sets the format used for marshaling timestamps.
@@ -49,18 +50,13 @@ type JSONFormatter struct {
 }
 
 // Format renders a single log entry
-func (f *JSONFormatter) Format(...log.Field) ([]byte, error) {
+func (f *JSONFormatter) Format(fields ...log.Field) ([]byte, error) {
 	data := make([]log.Field, 3)
-	/*	for k, v := range entry.Data {
-		switch v := v.(type) {
-		case error:
-			// Otherwise errors are ignored by `encoding/json`
-			// https://github.com/sirupsen/logrus/issues/137
-			data[k] = v.Error()
-		default:
-			data[k] = v
-		}
-	}*/
+	for k, v := range fields {
+
+		data[k] = v
+
+	}
 
 	if f.DataKey != "" {
 		newData := make([]log.Field, 4)
