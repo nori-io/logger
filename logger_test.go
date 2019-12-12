@@ -2,6 +2,7 @@ package logger_test
 
 import (
 	"bytes"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,83 +17,90 @@ func TestLogger(t *testing.T) {
 	testData := "test"
 	buferSize := 4
 	buf := bytes.Buffer{}
-	log := logger.Logger{
-		Out:  &buf,
-		Core: logger.Core{Fields: []loggerNoriCommon.Field{}},
+	logTest1 := &logger.Logger{
+		Mu:           sync.Mutex{},
+		Out:          &buf,
+		Core:         logger.Core{},
+		Formatter:    logger.JSONFormatter{},
+		Hooks:        nil,
+		ReportCaller: false,
 	}
 
-	log.Log(loggerNoriCommon.LevelInfo, testData)
+	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Printf("%s", []byte(testData))
+	logTest1.Fatal("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Fatal("%s", []byte(testData))
+	logTest1.Panic("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Panic("%s", []byte(testData))
+	logTest1.Error("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Error("%s", []byte(testData))
+	logTest1.Critical("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Critical("%s", []byte(testData))
+	logTest1.Debug("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Debug("%s", []byte(testData))
+	logTest1.Info("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Info("%s", []byte(testData))
+	logTest1.Notice("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Notice("%s", []byte(testData))
+	logTest1.Warning("%s", []byte(testData))
 	_, err = buf.Read(result)
 	a.Equal(testData, string(result))
 	a.NoError(err)
 	buf.Reset()
 
-	log.Warning("%s", []byte(testData))
-	_, err = buf.Read(result)
-	a.Equal(testData, string(result))
-	a.NoError(err)
-	buf.Reset()
-
-	buferSize = 25
+	buferSize = 71
 	result = make([]byte, buferSize)
-	log.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	log.Info("%s", "testWarning")
+	logTest2 := logTest1
+	logTest2.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
+	logTest2.Info("%s", "testWarning")
 	_, err = buf.Read(result)
 	testData = ""
-	for _, value := range log.Core.Fields {
+	for _, value := range logTest2.Core.Fields {
 		testData = testData + value.Key + " " + value.Value
 	}
 	testData = testData + "testWarning"
-	a.Equal(string(result), testData)
+
+	//fmt.Println(string(result), "\n", testData)
+
+	a.Equal(true, &logTest1.Mu == &logTest2.Mu)
+	a.Equal(true, &logTest1.Formatter == &logTest2.Formatter)
+	a.Equal(true, &logTest1.Out == &logTest2.Out)
+	a.Equal(false, &logTest1 == &logTest2)
+	a.Equal(true, &logTest1.Core == &logTest2.Core)
+
 	a.NoError(err)
 	buf.Reset()
 }

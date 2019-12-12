@@ -21,7 +21,6 @@ func (f FieldMap) resolve(key fieldKey) string {
 	return string(key)
 }
 
-
 // JSONFormatter formats logs into parsable json
 type JSONFormatter struct {
 	// TimestampFormat sets the format used for marshaling timestamps.
@@ -51,7 +50,7 @@ type JSONFormatter struct {
 
 // Format renders a single log entry
 func (f *JSONFormatter) Format(fields ...log.Field) ([]byte, error) {
-	data := make([]log.Field, 3)
+	data := make([]log.Field, 1)
 	for k, v := range fields {
 
 		data[k] = v
@@ -59,7 +58,7 @@ func (f *JSONFormatter) Format(fields ...log.Field) ([]byte, error) {
 	}
 
 	if f.DataKey != "" {
-		newData := make([]log.Field, 4)
+		newData := make([]log.Field, 2)
 		//newData[f.DataKey] = data
 		data = newData
 	}

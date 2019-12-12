@@ -18,7 +18,7 @@ type Core struct {
 
 type Logger struct {
 	Out          io.Writer
-	mu           sync.Mutex
+	Mu           sync.Mutex
 	Core         Core
 	Formatter    JSONFormatter
 	Hooks        LevelHooks
@@ -34,7 +34,7 @@ type LevelEnabler interface {
 func New() (logger logger.Logger) {
 	return &Logger{
 		Out:          os.Stderr,
-		mu:           sync.Mutex{},
+		Mu:           sync.Mutex{},
 		Core:         Core{},
 		Formatter:    JSONFormatter{},
 		Hooks:        nil,
@@ -90,17 +90,17 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 
 // Log push to log with specified level
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
-	log.mu.Lock()
-	defer log.mu.Unlock()
+	log.Mu.Lock()
+	defer log.Mu.Unlock()
 
-//	log.Formatter.Format(log.Core.Fields...)
-
+	//	log.Formatter.Format(log.Core.Fields...)
 
 	for _, value := range log.Core.Fields {
-		bytes, err:=log.Formatter.Format(value)
-		if err==nil{
-		log.Out.Write(bytes)}
-		fmt.Println("Format test", string(bytes))
+		bytes, err := log.Formatter.Format(value)
+		if err == nil {
+
+			log.Out.Write(bytes)
+		}
 		//log.Out.Write([]byte(value.Key + " " + value.Value))
 	}
 
@@ -131,4 +131,3 @@ func With(log *Logger, fields ...logger.Field) *Logger {
 	log = clone
 	return log
 }
-
