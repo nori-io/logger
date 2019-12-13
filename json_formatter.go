@@ -50,6 +50,7 @@ type JSONFormatter struct {
 
 // Format renders a single log entry
 func (f *JSONFormatter) Format(fields ...log.Field) ([]byte, error) {
+
 	data := make([]log.Field, 1)
 	for k, v := range fields {
 
