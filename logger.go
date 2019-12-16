@@ -17,14 +17,11 @@ type Core struct {
 }
 
 type Logger struct {
-	Out          io.Writer
-	Mu           sync.Mutex
-	Core         Core
-	Formatter    JSONFormatter
-	Hooks        LevelHooks
-	ReportCaller bool
-	//	Fields []logger.Field
-
+	Out       io.Writer
+	Mu        sync.Mutex
+	Core      Core
+	Formatter JSONFormatter
+	Hooks     LevelHooks
 }
 
 type LevelEnabler interface {
@@ -33,13 +30,11 @@ type LevelEnabler interface {
 
 func New() (logger logger.Logger) {
 	return &Logger{
-		Out:          os.Stderr,
-		Mu:           sync.Mutex{},
-		Core:         Core{},
-		Formatter:    JSONFormatter{},
-		Hooks:        nil,
-		ReportCaller: false,
-		//	Fields:       nil,
+		Out:       os.Stderr,
+		Mu:        sync.Mutex{},
+		Core:      Core{},
+		Formatter: JSONFormatter{},
+		Hooks:     nil,
 	}
 }
 
@@ -120,7 +115,9 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 }
 
 func (log *Logger) clone() *Logger {
+	//tempCore := log.Core
 	copy := *log
+	//	log.Core = tempCore
 	return &copy
 }
 

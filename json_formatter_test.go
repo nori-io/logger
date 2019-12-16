@@ -13,12 +13,11 @@ import (
 func TestErrorNotLost(t *testing.T) {
 
 	logTest1 := &logger.Logger{
-		Out:          nil,
-		Mu:           sync.Mutex{},
-		Core:         logger.Core{},
-		Formatter:    logger.JSONFormatter{},
-		Hooks:        nil,
-		ReportCaller: false,
+		Out:       nil,
+		Mu:        sync.Mutex{},
+		Core:      logger.Core{},
+		Formatter: logger.JSONFormatter{},
+		Hooks:     nil,
 	}
 
 	testField := loggerNoriCommon.Field{Key: "key1", Value: "value1"}
