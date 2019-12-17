@@ -107,26 +107,26 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	if len(fields) == 0 {
 		return log
 	}
+	tempCoreFields := log.Core.Fields
 
 	With(log, fields...)
+
 	l := log.clone()
+	log.Core.Fields = tempCoreFields
 
 	return l
 }
 
 func (log *Logger) clone() *Logger {
 	copy := *log
-
-	copy.Mu= log.Mu
 	return &copy
 }
 
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
-	tempCoreFields := log.Core.Fields
+
 	clone.Core.Fields = append(clone.Core.Fields, fields...)
-	log.Core.Fields = tempCoreFields
 
 	return log
 }
