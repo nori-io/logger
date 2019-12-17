@@ -118,8 +118,9 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 }
 
 func (log *Logger) clone() *Logger {
-	copy := *log
-	return &copy
+	copy := log
+	//copy.Formatter = log.Formatter
+	return copy
 }
 
 func With(log *Logger, fields ...logger.Field) *Logger {
