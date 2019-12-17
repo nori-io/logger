@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"io"
-	"os"
 	"sync"
 	"time"
 
@@ -20,7 +19,7 @@ type Logger struct {
 	Out       io.Writer
 	Mu        sync.Mutex
 	Core      Core
-	Formatter JSONFormatter
+	Formatter Formatter
 	Hooks     LevelHooks
 }
 
@@ -28,14 +27,13 @@ type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
 }
 
-func New() (logger logger.Logger) {
-	return &Logger{
-		Out:       os.Stderr,
-		Mu:        sync.Mutex{},
-		Core:      Core{},
-		Formatter: JSONFormatter{},
-		Hooks:     nil,
+func New(options ...Option) (logger logger.Logger) {
+	log := &Logger{
+		Mu:    sync.Mutex{},
+		Core:  Core{},
+		Hooks: nil,
 	}
+	return log.WithOptions(options...)
 }
 
 // Fatal
@@ -127,4 +125,12 @@ func With(log *Logger, fields ...logger.Field) *Logger {
 	clone.Core.Fields = append(clone.Core.Fields, fields...)
 	log = clone
 	return log
+}
+
+func (log *Logger) WithOptions(opts ...Option) *Logger {
+	c := log.clone()
+	for _, opt := range opts {
+		opt.apply(c)
+	}
+	return c
 }

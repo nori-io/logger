@@ -28,7 +28,7 @@ const (
 // `entry.Data`. Format is expected to return an array of bytes which are then
 // logged to `logger.Out`.
 type Formatter interface {
-	Format(field *[]log.Field) ([]byte, error)
+	Format(field ...log.Field) ([]byte, error)
 }
 
 // This is to not silently overwrite `time`, `msg`, `func` and `level` fields when

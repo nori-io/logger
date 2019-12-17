@@ -3,7 +3,6 @@ package logger_test
 import (
 	"bytes"
 	"fmt"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,13 +17,7 @@ func TestLogger(t *testing.T) {
 	testData := "test"
 	buferSize := 4
 	buf := bytes.Buffer{}
-	logTest1 := &logger.Logger{
-		Mu:        sync.Mutex{},
-		Out:       &buf,
-		Core:      logger.Core{},
-		Formatter: logger.JSONFormatter{},
-		Hooks:     nil,
-	}
+	logTest1 := logger.New()
 	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
@@ -86,14 +79,14 @@ func TestLoggerWith(t *testing.T) {
 	a := assert.New(t)
 	/*	buferSize := 71
 		result := make([]byte, buferSize)*/
-	logTest1 := new(logger.Logger)
-
 	buf := bytes.Buffer{}
-	logTest1.Out = &buf
+
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	//	logTest1.Out = &buf
 
 	//logTest2 := (logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})).(*logger.Logger)
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	fmt.Println(logTest2)
 	a.Equal(true, logTest1 == logTest1)
 
 	//	logTest2.Info("%s", "testWarning")

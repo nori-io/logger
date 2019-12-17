@@ -1,30 +1,22 @@
 package logger_test
 
-import (
-	"bytes"
-	"log/syslog"
-	"sync"
-	"testing"
-
-	loggerNoriCommon "github.com/nori-io/nori-common/logger"
-	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-
-	lSyslog "github.com/sirupsen/logrus/hooks/syslog"
-
-	"github.com/nori-io/logger"
-)
-
+/*
 func TestNew(t *testing.T) {
 	// тут у тебя создается твой логгер
 	a := assert.New(t)
-	logHook := logrus.New()
-	bufferSize := 4
+	logHook := logger.Logger{
+		Out:       nil,
+		Mu:        sync.Mutex{},
+		Core:      logger.Core{},
+		Formatter: logger.JSONFormatter{},
+		Hooks:     nil,
+	}
+	bufferSize := 54
 	buf := bytes.Buffer{}
 	logHook.Out = &buf
 
 	// создается твой хук
-	hook, err := lSyslog.NewSyslogHook("", "", syslog.LOG_INFO, "")
+	hook, err := syslog.NewSyslogHook("", "", logSyst.LOG_INFO, "")
 	if err == nil {
 		logHook.Hooks.Add(hook)
 	}
@@ -82,10 +74,10 @@ func TestHookFires(t *testing.T) {
 	}, func(fields Fields) {
 		assert.Equal(t, hook.Fired, true)
 	})*/
-}
+/*}
 
 type ModifyHook struct {
-}
+}*/
 
 /*func (hook *ModifyHook) Fire(entry *Entry) error {
 	entry.Data["wow"] = "whale"
@@ -131,9 +123,9 @@ type ModifyHook struct {
 }
 */
 
-type SingleLevelModifyHook struct {
+/*type SingleLevelModifyHook struct {
 	ModifyHook
-}
+}*/
 
 /*func (h *SingleLevelModifyHook) Levels() []Level {
 	return []Level{InfoLevel}
@@ -171,10 +163,10 @@ type SingleLevelModifyHook struct {
 	b.Reset()
 }
 */
-type ErrorHook struct {
+/*type ErrorHook struct {
 	Fired bool
 }
-
+*/
 /*func (hook *ErrorHook) Fire(entry *Entry) error {
 	hook.Fired = true
 	return nil
@@ -227,5 +219,4 @@ type ErrorHook struct {
 		// before the hook was added, so we can't
 		// actually assert on the hook
 	})
-}
-*/
+}*/
