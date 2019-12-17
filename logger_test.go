@@ -2,7 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,7 @@ func TestLogger(t *testing.T) {
 	testData := "test"
 	buferSize := 4
 	buf := bytes.Buffer{}
-	logTest1 := logger.New()
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
@@ -77,35 +76,21 @@ func TestLogger(t *testing.T) {
 
 func TestLoggerWith(t *testing.T) {
 	a := assert.New(t)
-	/*	buferSize := 71
-		result := make([]byte, buferSize)*/
+	buferSize := 71
+	result := make([]byte, buferSize)
+	result2 := make([]byte, buferSize)
 	buf := bytes.Buffer{}
 
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1.Log(loggerNoriCommon.LevelInfo, "test")
+	buf.Read(result)
+	buf.Reset()
 
-	//	logTest1.Out = &buf
-
-	//logTest2 := (logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})).(*logger.Logger)
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	a.Equal(true, logTest1 == logTest1)
+	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
+	a.Equal(false, &logTest1 == &logTest2)
+	a.Equal(false, string(result) == string(result2))
+	buf.Read(result2)
 
-	//	logTest2.Info("%s", "testWarning")
-	//_, err := buf.Read(result)
-	//	testData := ""
-	fmt.Println(&logTest2)
-
-	fmt.Println(&logTest1)
-	/*	for _, value := range logTest2.Core.Fields {
-			testData = testData + value.Key + " " + value.Value
-		}
-		testData = testData + "testWarning"
-
-		a.Equal(true, &logTest1.Mu == &logTest2.Mu)
-		a.Equal(true, &logTest1.Formatter == &logTest2.Formatter)
-		a.Equal(true, &logTest1.Out == &logTest2.Out)
-		a.Equal(false, logTest1 == logTest2)
-		a.Equal(true, &logTest1.Core == &logTest2.Core)*/
-
-	//	a.NoError(err)
 	buf.Reset()
 }

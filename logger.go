@@ -29,9 +29,11 @@ type LevelEnabler interface {
 
 func New(options ...Option) (logger logger.Logger) {
 	log := &Logger{
-		Mu:    sync.Mutex{},
-		Core:  Core{},
-		Hooks: nil,
+		Out:       nil,
+		Mu:        sync.Mutex{},
+		Core:      Core{},
+		Formatter: nil,
+		Hooks:     nil,
 	}
 	return log.WithOptions(options...)
 }
@@ -113,17 +115,17 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 }
 
 func (log *Logger) clone() *Logger {
-	//tempCore := log.Core
 	copy := *log
-	//	log.Core = tempCore
 	return &copy
 }
 
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
+	tempCoreFields := log.Core.Fields
 	clone.Core.Fields = append(clone.Core.Fields, fields...)
-	log = clone
+	log.Core.Fields = tempCoreFields
+
 	return log
 }
 
