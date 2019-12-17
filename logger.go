@@ -17,7 +17,7 @@ type Core struct {
 
 type Logger struct {
 	Out       io.Writer
-	Mu        sync.Mutex
+	Mu        *sync.Mutex
 	Core      Core
 	Formatter Formatter
 	Hooks     LevelHooks
@@ -30,7 +30,7 @@ type LevelEnabler interface {
 func New(options ...Option) (logger logger.Logger) {
 	log := &Logger{
 		Out:       nil,
-		Mu:        sync.Mutex{},
+		Mu:        &sync.Mutex{},
 		Core:      Core{},
 		Formatter: nil,
 		Hooks:     nil,
@@ -116,6 +116,8 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 
 func (log *Logger) clone() *Logger {
 	copy := *log
+
+	copy.Mu= log.Mu
 	return &copy
 }
 
