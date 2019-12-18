@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"io"
 	"sync"
-	"time"
 
 	"github.com/nori-io/nori-common/logger"
 )
 
 type Core struct {
 	Fields []logger.Field
-	Time   time.Time
-	Level  logger.Level
+	//Time   time.Time
+	//Level  logger.Level
 }
 
 type Logger struct {
