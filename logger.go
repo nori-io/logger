@@ -106,12 +106,12 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	temp:=log.Core.Fields
+	temp := log.Core.Fields
 
 	With(log, fields...)
 	l := log.clone()
 
-	log.Core.Fields=temp
+	log.Core.Fields = temp
 
 	return l
 }
