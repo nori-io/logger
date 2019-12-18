@@ -19,7 +19,7 @@ type Logger struct {
 	Out       io.Writer
 	Mu        *sync.Mutex
 	Core      Core
-	Formatter Formatter
+	Formatter *JSONFormatter
 	Hooks     LevelHooks
 }
 
@@ -107,28 +107,26 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	tempCoreFields := log.Core.Fields
+	temp:=log.Core.Fields
 
 	With(log, fields...)
-
 	l := log.clone()
-	log.Core.Fields = tempCoreFields
+
+	log.Core.Fields=temp
 
 	return l
 }
 
 func (log *Logger) clone() *Logger {
-	copy := log
-	//copy.Formatter = log.Formatter
-	return copy
+	copy := *log
+	return &copy
 }
 
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
-
 	clone.Core.Fields = append(clone.Core.Fields, fields...)
-
+	log = clone
 	return log
 }
 
