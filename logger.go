@@ -16,7 +16,7 @@ type Core struct {
 }
 
 type Logger struct {
-	Out       io.Writer
+	Out       *io.Writer
 	Mu        *sync.Mutex
 	Core      Core
 	Formatter *JSONFormatter
@@ -94,12 +94,12 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 		bytes, err := log.Formatter.Format(value)
 		if err == nil {
 
-			log.Out.Write(bytes)
+			(*log.Out).Write(bytes)
 		}
 		//log.Out.Write([]byte(value.Key + " " + value.Value))
 	}
 
-	log.Out.Write([]byte(fmt.Sprintf(format, opts...)))
+	(*log.Out).Write([]byte(fmt.Sprintf(format, opts...)))
 
 }
 

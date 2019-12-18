@@ -35,7 +35,7 @@ func SetJsonFormatter() Option {
 
 func SetOutWriter(writer io.Writer) Option {
 	return optionFunc(func(log *Logger) {
-		log.Out = writer
+		log.Out = &writer
 	})
 }
 
