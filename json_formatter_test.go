@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"sync"
 	"testing"
+	"time"
 
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 
@@ -15,7 +16,7 @@ func TestErrorNotLost(t *testing.T) {
 	logTest1 := &logger.Logger{
 		Out:       nil,
 		Mu:        &sync.Mutex{},
-		Fields:    make([]loggerNoriCommon.Field, 0),
+		Fields:    make([]loggerNoriCommon.Field, 2),
 		Formatter: &logger.JSONFormatter{},
 		Hooks:     nil,
 	}
@@ -24,20 +25,20 @@ func TestErrorNotLost(t *testing.T) {
 
 	b, err := logTest1.Formatter.Format(testField)
 
-	type data []loggerNoriCommon.Field
+	type decodedData struct {
+		Key  string    `json:"key1"`
+		Time time.Time `json:"time"`
+	}
 
-	//var jsonBlob data
+	decodedDataTest := new(decodedData)
 
 	if err != nil {
 		t.Fatal("Unable to format entry: ", err)
 	}
 
-	err = json.Unmarshal(b, &data{})
+	err = json.Unmarshal(b, &decodedDataTest)
 	if err != nil {
 		t.Fatal("Unable to unmarshal formatted entry: ", err)
 	}
-	/*
-		if entry["error"] != "wild walrus" {
-			t.Fatal("Error field not set")
-		}*/
+
 }
