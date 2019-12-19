@@ -19,9 +19,8 @@ type Logger struct {
 	Mu        *sync.Mutex
 	Core      Core
 	Formatter *JSONFormatter
-	Hooks     LevelHooks
+	Hooks     *Hook
 }
-
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
 }
@@ -95,10 +94,16 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 			(*log.Out).Write(bytes)
 		}
-		//log.Out.Write([]byte(value.Key + " " + value.Value))
+		(*log.Out).Write(bytes)
+		fmt.Println(string(bytes))
 	}
 
-	(*log.Out).Write([]byte(fmt.Sprintf(format, opts...)))
+	text, _ := log.Formatter.Format(logger.Field{
+		Key:   "Msg",
+		Value: format,
+	})
+	(*log.Out).Write([]byte(text))
+	fmt.Println(string(text))
 
 }
 
