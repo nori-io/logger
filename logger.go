@@ -8,16 +8,10 @@ import (
 	"github.com/nori-io/nori-common/logger"
 )
 
-type Core struct {
-	Fields []logger.Field
-	//Time   time.Time
-	//Level  logger.Level
-}
-
 type Logger struct {
 	Out       *io.Writer
 	Mu        *sync.Mutex
-	Core      Core
+	Fields    []logger.Field
 	Formatter *JSONFormatter
 	Hooks     *Hook
 }
@@ -25,11 +19,11 @@ type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
 }
 
-func New(options ...Option) (logger logger.Logger) {
+func New(options ...Option) (loggerNew logger.Logger) {
 	log := &Logger{
 		Out:       nil,
 		Mu:        &sync.Mutex{},
-		Core:      Core{},
+		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
 		Hooks:     nil,
 	}
@@ -88,7 +82,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 	//	log.Formatter.Format(log.Core.Fields...)
 
-	for _, value := range log.Core.Fields {
+	for _, value := range log.Fields {
 		bytes, err := log.Formatter.Format(value)
 		if err == nil {
 
@@ -111,12 +105,12 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	temp := log.Core.Fields
+	temp := log.Fields
 
 	With(log, fields...)
 	l := log.clone()
 
-	log.Core.Fields = temp
+	log.Fields = temp
 
 	return l
 }
@@ -129,7 +123,7 @@ func (log *Logger) clone() *Logger {
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
-	clone.Core.Fields = append(clone.Core.Fields, fields...)
+	clone.Fields = append(clone.Fields, fields...)
 	log = clone
 	return log
 }

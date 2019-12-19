@@ -15,7 +15,7 @@ func TestErrorNotLost(t *testing.T) {
 	logTest1 := &logger.Logger{
 		Out:       nil,
 		Mu:        &sync.Mutex{},
-		Core:      logger.Core{},
+		Fields:    make([]loggerNoriCommon.Field, 0),
 		Formatter: &logger.JSONFormatter{},
 		Hooks:     nil,
 	}
