@@ -2,6 +2,8 @@ package logger_test
 
 import (
 	"bytes"
+	"fmt"
+
 	//"sync"
 	"testing"
 
@@ -78,7 +80,7 @@ func TestLogger(t *testing.T) {
 
 func TestLoggerWith(t *testing.T) {
 	a := assert.New(t)
-	buferSize := 71
+	buferSize := 250
 	result := make([]byte, buferSize)
 	result2 := make([]byte, buferSize)
 	buf := bytes.Buffer{}
@@ -97,9 +99,11 @@ func TestLoggerWith(t *testing.T) {
 
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
+	buf.Read(result2)
+	fmt.Println(string(result) , "res")
+	fmt.Println(string(result2))
 	a.Equal(false, &logTest1 == &logTest2)
 	a.Equal(false, string(result) == string(result2))
-	buf.Read(result2)
 
 	buf.Reset()
 }

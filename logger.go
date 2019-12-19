@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"io"
 	"sync"
 
@@ -88,8 +87,6 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 			(*log.Out).Write(bytes)
 		}
-		(*log.Out).Write(bytes)
-		fmt.Println(string(bytes))
 	}
 
 	text, _ := log.Formatter.Format(logger.Field{
@@ -97,7 +94,6 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 		Value: format,
 	})
 	(*log.Out).Write([]byte(text))
-	fmt.Println(string(text))
 
 }
 
