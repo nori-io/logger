@@ -2,8 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"fmt"
-
 	//"sync"
 	"testing"
 
@@ -100,8 +98,6 @@ func TestLoggerWith(t *testing.T) {
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
 	buf.Read(result2)
-	fmt.Println(string(result) , "res")
-	fmt.Println(string(result2))
 	a.Equal(false, &logTest1 == &logTest2)
 	a.Equal(false, string(result) == string(result2))
 
