@@ -39,6 +39,12 @@ func SetOutWriter(writer io.Writer) Option {
 	})
 }
 
+func SetHook(hook Hook) Option {
+	return optionFunc(func(log *Logger) {
+		//log.Hooks = LevelHooks{}
+	})
+}
+
 /*// WrapCore wraps or replaces the Logger's underlying zapcore.Core.
 func WrapCore(f func(zapcore.Core) zapcore.Core) Option {
 	return optionFunc(func(log *Logger) {
