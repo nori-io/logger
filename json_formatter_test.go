@@ -2,6 +2,7 @@ package logger_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -40,5 +41,7 @@ func TestErrorNotLost(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unable to unmarshal formatted entry: ", err)
 	}
+
+	fmt.Println(decodedDataTest)
 
 }

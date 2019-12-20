@@ -47,13 +47,13 @@ func (f *JSONFormatter) Format(fields ...log.Field) ([]byte, error) {
 		data[v.Key] = v.Value
 
 	}
-
-	if f.DataKey != "" {
-		newData := make(map[string]string, 2)
-		//newData[f.DataKey] = data
-		data = newData
-	}
-
+	/*
+		if f.DataKey != "" {
+			newData := make(map[string]string, 2)
+			//newData[f.DataKey] = data
+			data = newData
+		}
+	*/
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
 		timestampFormat = defaultTimestampFormat

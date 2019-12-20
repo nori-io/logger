@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"fmt"
 	"io"
+	"strings"
 	"sync"
 
 	"github.com/nori-io/nori-common/logger"
@@ -78,9 +80,11 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Mu.Lock()
 	defer log.Mu.Unlock()
-
+	//fmt.Println("level is", level)
 	//	log.Formatter.Format(log.Core.Fields...)
-
+	levelType := fmt.Sprintf("%s", level)
+	levelType = strings.ToUpper(levelType)
+	(*log.Out).Write([]byte("[" + levelType + "]"))
 	for _, value := range log.Fields {
 		bytes, err := log.Formatter.Format(value)
 		if err == nil {
