@@ -9,27 +9,30 @@ import (
 	"github.com/nori-io/logger"
 )
 
+
+
 func TestNew(t *testing.T) {
 	// тут у тебя создается твой логгер
 	a := assert.New(t)
 	bufferSize := 54
 
 	// создается твой хук
-	hook := *new(logger.Hook)
+	//hook := *new(logger.Hook)
 	fields := make([]loggerNoriCommon.Field, 1)
 	fields = append(fields, loggerNoriCommon.Field{Key: "1", Value: "test1"})
 	levelHooks := logger.LevelHooks{}
-	levelHooks.Add(hook)
+	levelHooks.Add(&TestHook{Fired:false})
 	levelHooks.Fire(loggerNoriCommon.LevelInfo, fields)
+
+
 	result := make([]byte, bufferSize)
 	//_, err:= buf.Read(result)
-	logTest1 := logger.New()
-	logTest1.Info("test")
+	//logTest1 := logger.New()
+	//logTest1.Info("test")
 	result2 := make([]byte, bufferSize)
 	//	_, err = buf.Read(result2)
 	a.Equal(string(result), string(result2))
 
-	// и вывод должен быть в двух местах, куда записал log и куда записал хук
 }
 
 type TestHook struct {
