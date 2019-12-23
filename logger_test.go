@@ -2,6 +2,8 @@ package logger_test
 
 import (
 	"bytes"
+	"log/syslog"
+
 	//"sync"
 	"testing"
 
@@ -11,6 +13,7 @@ import (
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 
 	"github.com/nori-io/logger"
+	logger2 "github.com/nori-io/logger/hooks/syslog"
 )
 
 func TestLogger(t *testing.T) {
@@ -83,14 +86,8 @@ func TestLoggerWith(t *testing.T) {
 	result2 := make([]byte, buferSize)
 	buf := bytes.Buffer{}
 
-	//logHook:= logger.New()
-
-	//hook, err := syslog.NewSyslogHook("", "", syslog2.LOG_INFO, "")
-	//	if err == nil {
-	//logHook.
-	//}
-
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetHook(nil))
+	hook, _ := logger2.NewSyslogHook("udp", "localhost:514", syslog.LOG_INFO, "")
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetSysLogHook(*hook))
 	logTest1.Log(loggerNoriCommon.LevelInfo, "test")
 	buf.Read(result)
 	buf.Reset()

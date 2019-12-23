@@ -1,6 +1,10 @@
 package logger
 
-import "io"
+import (
+	"io"
+
+	logger "github.com/nori-io/logger/hooks/syslog"
+)
 
 // An Option configures a Logger.
 type Option interface {
@@ -39,9 +43,9 @@ func SetOutWriter(writer io.Writer) Option {
 	})
 }
 
-func SetHook(hook Hook) Option {
+func SetSysLogHook(hook logger.SyslogHook) Option {
 	return optionFunc(func(log *Logger) {
-		//log.Hooks = LevelHooks{}
+		log.Hooks = hook
 	})
 }
 

@@ -1,13 +1,9 @@
 // +build !windows,!nacl,!plan9
 
-package syslog
+package logger
 
 import (
-	"fmt"
 	"log/syslog"
-	"os"
-
-	"github.com/sirupsen/logrus"
 )
 
 // SyslogHook to send logs via syslog.
@@ -25,7 +21,7 @@ func NewSyslogHook(network, raddr string, priority syslog.Priority, tag string) 
 	return &SyslogHook{w, network, raddr}, err
 }
 
-func (hook *SyslogHook) Fire(entry *logrus.Entry) error {
+/*func (hook *SyslogHook) Fire(entry *logrus.Entry) error {
 	line, err := entry.String()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to read entry, %v", err)
@@ -52,4 +48,4 @@ func (hook *SyslogHook) Fire(entry *logrus.Entry) error {
 
 func (hook *SyslogHook) Levels() []logrus.Level {
 	return logrus.AllLevels
-}
+}*/

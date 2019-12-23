@@ -2,44 +2,29 @@ package logger_test
 
 import (
 	"bytes"
+	"log/syslog"
 	"testing"
 
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
-	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
+	logger2 "github.com/nori-io/logger/hooks/syslog"
 )
 
-func TestNew(t *testing.T) {
-	// тут у тебя создается твой логгер
-	a := assert.New(t)
-	bufferSize := 54
+func TestLocalhostAddAndPrint(t *testing.T) {
 
-	// создается твой хук
-	//hook := *new(logger.Hook)
-	fields := make([]loggerNoriCommon.Field, 1)
-	fields = append(fields, loggerNoriCommon.Field{Key: "1", Value: "test1"})
-	levelHooks := logger.LevelHooks{}
-	testHook := &TestHook{Fired: true}
-	levelHooks.Add(testHook)
-	levelHooks.Fire(loggerNoriCommon.LevelInfo, fields)
-
-	result := make([]byte, bufferSize)
-	result2 := make([]byte, bufferSize)
 	buf := bytes.Buffer{}
 
-	//hook, err := syslog.NewSyslogHook("", "", syslog2.LOG_INFO, "")
-	//	if err == nil {
-	//logHook.
-	//}
+	hook, err := logger2.NewSyslogHook("udp", "localhost:514", syslog.LOG_INFO, "")
 
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetHook(nil))
-	logTest1.Info("test")
-	//_, err:= buf.Read(result)
-	//logTest1 := logger.New()
-	//logTest1.Info("test")
-	//	_, err = buf.Read(result2)
-	a.Equal(string(result), string(result2))
+	log := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetSysLogHook(*hook))
+
+	if err != nil {
+		t.Errorf("Unable to connect to local syslog.")
+	}
+
+	log.Info("Congratulations!")
+	//log.Hooks.Add(hook)
 
 }
 
@@ -64,3 +49,38 @@ func (hook *TestHook) Levels() []loggerNoriCommon.Level {
 		loggerNoriCommon.LevelDebug,
 	}
 }
+
+type SyslogHook struct {
+	Writer        *syslog.Writer
+	SyslogNetwork string
+	SyslogRaddr   string
+}
+
+/*func (hook *SyslogHook) Fire(entry *logrus.Entry) error {
+	line, err := entry.String()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to read entry, %v", err)
+		return err
+	}
+
+	switch entry.Level {
+	case logrus.PanicLevel:
+		return hook.Writer.Crit(line)
+	case logrus.FatalLevel:
+		return hook.Writer.Crit(line)
+	case logrus.ErrorLevel:
+		return hook.Writer.Err(line)
+	case logrus.WarnLevel:
+		return hook.Writer.Warning(line)
+	case logrus.InfoLevel:
+		return hook.Writer.Info(line)
+	case logrus.DebugLevel, logrus.TraceLevel:
+		return hook.Writer.Debug(line)
+	default:
+		return nil
+	}
+}
+
+func (hook *SyslogHook) Levels() []logrus.Level {
+	return logrus.AllLevels
+}*/
