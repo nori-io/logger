@@ -23,8 +23,7 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 		t.Errorf("Unable to connect to local syslog.")
 	}
 
-	log.Info("Congratulations!")
-	//log.Hooks.Add(hook)
+	log.Info("done")
 
 }
 

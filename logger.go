@@ -28,7 +28,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks:     logger2.SyslogHook{
+		Hooks: logger2.SyslogHook{
 			Writer:        nil,
 			SyslogNetwork: "",
 			SyslogRaddr:   "",
@@ -86,25 +86,25 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Mu.Lock()
 	defer log.Mu.Unlock()
-	//fmt.Println("level is", level)
-	//	log.Formatter.Format(log.Core.Fields...)
 	levelType := fmt.Sprintf("%s", level)
 	levelType = strings.ToUpper(levelType)
-	(*log.Out).Write([]byte("[" + levelType + "]"))
-	(log.Hooks).Writer.Info("[" + levelType + "]")
-	for _, value := range log.Fields {
-		bytes, err := log.Formatter.Format(value)
-		if err == nil {
 
-			(*log.Out).Write(bytes)
+	for _, value := range log.Fields {
+		fields, err := log.Formatter.FormatFields(value)
+		if err == nil {
+			levelType = "[" + levelType + "]"
+			message, _ := log.Formatter.FormatMessage(logger.Field{
+				Key:   "Msg",
+				Value: format,
+			})
+
+			text := levelType + string(fields) + string(message) + "\n\r"
+
+			(*log.Out).Write([]byte(text))
+			log.Hooks.Writer.Write([]byte(text))
+			fmt.Println(text)
 		}
 	}
-
-	text, _ := log.Formatter.Format(logger.Field{
-		Key:   "Msg",
-		Value: format,
-	})
-	(*log.Out).Write([]byte(text))
 
 }
 

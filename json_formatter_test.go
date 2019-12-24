@@ -20,7 +20,7 @@ func TestErrorNotLost(t *testing.T) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]loggerNoriCommon.Field, 2),
 		Formatter: &logger.JSONFormatter{},
-		Hooks:     logger2.SyslogHook{
+		Hooks: logger2.SyslogHook{
 			Writer:        nil,
 			SyslogNetwork: "",
 			SyslogRaddr:   "",
@@ -29,7 +29,7 @@ func TestErrorNotLost(t *testing.T) {
 
 	testField := loggerNoriCommon.Field{Key: "key1", Value: "value1"}
 
-	b, err := logTest1.Formatter.Format(testField)
+	b, err := logTest1.Formatter.FormatFields(testField)
 
 	type decodedData struct {
 		Key  string    `json:"key1"`
