@@ -39,7 +39,7 @@ type JSONFormatter struct {
 }
 
 // Format renders a single log entry
-func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
+func (f *JSONFormatter) FormatMessage(fields ...log.Field) ([]byte, error) {
 
 	data := make(map[string]string, 1)
 	for _, v := range fields {
@@ -77,7 +77,7 @@ func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (f *JSONFormatter) FormatMessage(fields ...log.Field) ([]byte, error) {
+func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
 
 	data := make(map[string]string, 1)
 	for _, v := range fields {

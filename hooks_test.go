@@ -16,13 +16,14 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 
 	hook, err := logger.NewFileHook("test_file")
 
-	log := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetFileHook(*hook))
-
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetFileHook(*hook))
+	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
+	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
 
-	log.Info("done")
+	logTest2.Warning("done")
 
 }
 

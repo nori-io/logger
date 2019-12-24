@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"io"
-	"strings"
 	"sync"
 
 	"github.com/nori-io/nori-common/logger"
@@ -82,29 +81,52 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Mu.Lock()
 	defer log.Mu.Unlock()
-	levelType := "[" + fmt.Sprintf("%s", level) + "]"
-	levelType = strings.ToUpper(levelType)
 	var fields []byte
 	var err error
-	for _, value := range log.Fields {
-		fields, err = log.Formatter.FormatFields(value)
-		if err != nil {
-			continue
+
+	if len(log.Fields) == 0 {
+		text, err :=
+			log.Formatter.FormatMessage(
+				logger.Field{
+					Key:   "level",
+					Value: level.String(),
+				},
+				logger.Field{
+					Key:   "msg",
+					Value: fmt.Sprintf(format, opts...),
+				})
+		if err == nil {
+			(*log.Out).Write([]byte(text))
+			log.Hooks.Writer.Write([]byte(text))
+		}
+	}
+	if len(log.Fields) > 0 {
+		var fieldsAll string
+		for _, value := range log.Fields {
+			fields, err = log.Formatter.FormatFields(value)
+			if err != nil {
+				continue
+			}
+			fieldsAll = fieldsAll + string(fields)
 		}
 
+		levelType, _ := log.Formatter.FormatMessage(logger.Field{
+			Key:   "level",
+			Value: string(level),
+		})
+
+		message, _ := log.Formatter.FormatMessage(logger.Field{
+			Key:   "msg",
+			Value: fmt.Sprintf(format, opts...),
+		})
+
+		text := string(levelType) + fieldsAll + string(message)
+
+		(*log.Out).Write([]byte(text))
+		log.Hooks.Writer.Write([]byte(text))
+		log.Hooks.Writer.Close()
+		fmt.Println(text)
 	}
-
-	message, _ := log.Formatter.FormatMessage(logger.Field{
-		Key:   "Msg",
-		Value: fmt.Sprintf(format, opts...),
-	})
-
-	text := levelType + string(fields) + string(message)
-
-	(*log.Out).Write([]byte(text))
-	log.Hooks.Writer.Write([]byte(text))
-	fmt.Println(text)
-
 }
 
 func (log *Logger) With(fields ...logger.Field) logger.Logger {
