@@ -7,8 +7,6 @@ import (
 	"sync"
 
 	"github.com/nori-io/nori-common/logger"
-
-	logger2 "github.com/nori-io/logger/hooks/syslog"
 )
 
 type Logger struct {
@@ -16,7 +14,7 @@ type Logger struct {
 	Mu        *sync.Mutex
 	Fields    []logger.Field
 	Formatter *JSONFormatter
-	Hooks     logger2.SyslogHook
+	Hooks     FileHook
 }
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
@@ -28,10 +26,8 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks: logger2.SyslogHook{
-			Writer:        nil,
-			SyslogNetwork: "",
-			SyslogRaddr:   "",
+		Hooks: FileHook{
+			Writer: nil,
 		},
 	}
 	return log.WithOptions(options...)

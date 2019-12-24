@@ -10,7 +10,6 @@ import (
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 
 	"github.com/nori-io/logger"
-	logger2 "github.com/nori-io/logger/hooks/syslog"
 )
 
 func TestErrorNotLost(t *testing.T) {
@@ -20,10 +19,8 @@ func TestErrorNotLost(t *testing.T) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]loggerNoriCommon.Field, 2),
 		Formatter: &logger.JSONFormatter{},
-		Hooks: logger2.SyslogHook{
-			Writer:        nil,
-			SyslogNetwork: "",
-			SyslogRaddr:   "",
+		Hooks: logger.FileHook{
+			Writer: nil,
 		},
 	}
 

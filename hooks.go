@@ -1,6 +1,10 @@
 package logger
 
-import "github.com/nori-io/nori-common/logger"
+import (
+	"os"
+
+	"github.com/nori-io/nori-common/logger"
+)
 
 // A hook to be fired when logging on the logging levels returned from
 // `Levels()` on your implementation of the interface. Note that this is not
@@ -33,4 +37,19 @@ func (hooks LevelHooks) Fire(level logger.Level, log []logger.Field) error {
 	}
 
 	return nil
+}
+
+type FileHook struct {
+	Writer *os.File
+}
+
+// Creates a hook to be added to an instance of logger. This is called with
+// `hook, err := NewFileHook("udp", "localhost:514", syslog.LOG_DEBUG, "")`
+// `if err == nil { log.Hooks.Add(hook) }`
+func NewFileHook(name string) (*FileHook, error) {
+	file, err := os.Create(name)
+	if err == nil {
+		return &FileHook{Writer: file}, err
+	}
+	return nil, err
 }

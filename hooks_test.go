@@ -8,19 +8,18 @@ import (
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 
 	"github.com/nori-io/logger"
-	logger2 "github.com/nori-io/logger/hooks/syslog"
 )
 
 func TestLocalhostAddAndPrint(t *testing.T) {
 
 	buf := bytes.Buffer{}
 
-	hook, err := logger2.NewSyslogHook("udp", "localhost:514", syslog.LOG_INFO, "")
+	hook, err := logger.NewFileHook("test_file")
 
-	log := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetSysLogHook(*hook))
+	log := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetFileHook(*hook))
 
 	if err != nil {
-		t.Errorf("Unable to connect to local syslog.")
+		t.Errorf("Can't create hook")
 	}
 
 	log.Info("done")
@@ -55,7 +54,7 @@ type SyslogHook struct {
 	SyslogRaddr   string
 }
 
-/*func (hook *SyslogHook) Fire(entry *logrus.Entry) error {
+/*func (hook *FileHook) Fire(entry *logrus.Entry) error {
 	line, err := entry.String()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to read entry, %v", err)
@@ -80,6 +79,6 @@ type SyslogHook struct {
 	}
 }
 
-func (hook *SyslogHook) Levels() []logrus.Level {
+func (hook *FileHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }*/
