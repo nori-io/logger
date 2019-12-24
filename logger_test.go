@@ -2,12 +2,10 @@ package logger_test
 
 import (
 	"bytes"
-
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
 )
@@ -15,19 +13,21 @@ import (
 func TestLogger(t *testing.T) {
 	a := assert.New(t)
 	testData := "test"
-	buferSize := 4
+	testResult := "[INFO]{\"Msg\":\"test\"}"
+	buferSize := 20
 	buf := bytes.Buffer{}
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, buferSize)
 	_, err := buf.Read(result)
-	a.Equal(testData, string(result))
+	a.Equal(testResult, string(result))
 	a.NoError(err)
 	buf.Reset()
 
+	testResult = "[FATAL]{\"Msg\":\"test\"}"
 	logTest1.Fatal("%s", []byte(testData))
 	_, err = buf.Read(result)
-	a.Equal(testData, string(result))
+	a.Equal(testResult, string(result))
 	a.NoError(err)
 	buf.Reset()
 
