@@ -96,10 +96,9 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 	message, _ := log.Formatter.FormatMessage(logger.Field{
 		Key:   "Msg",
-		Value: format,
+		Value: fmt.Sprintf(format, opts...),
 	})
 
-	//x:=string(opts)
 	text := levelType + string(fields) + string(message)
 
 	(*log.Out).Write([]byte(text))
