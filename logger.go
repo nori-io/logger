@@ -86,19 +86,18 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Mu.Lock()
 	defer log.Mu.Unlock()
-	levelType := fmt.Sprintf("%s", level)
+	levelType := "[" + fmt.Sprintf("%s", level) + "]"
 	levelType = strings.ToUpper(levelType)
 
 	for _, value := range log.Fields {
 		fields, err := log.Formatter.FormatFields(value)
 		if err == nil {
-			levelType = "[" + levelType + "]"
 			message, _ := log.Formatter.FormatMessage(logger.Field{
 				Key:   "Msg",
 				Value: format,
 			})
 
-			text := levelType + string(fields) + string(message) + "\n\r"
+			text := levelType + string(fields) + string(message)
 
 			(*log.Out).Write([]byte(text))
 			log.Hooks.Writer.Write([]byte(text))
