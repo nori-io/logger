@@ -99,6 +99,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 		Value: format,
 	})
 
+	//x:=string(opts)
 	text := levelType + string(fields) + string(message)
 
 	(*log.Out).Write([]byte(text))
