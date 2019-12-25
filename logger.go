@@ -26,7 +26,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks:     LevelHooks{},
+		Hooks:     make(map[logger.Level][]Hook),
 	}
 
 	return log.WithOptions(options...)
@@ -81,52 +81,24 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Mu.Lock()
 	defer log.Mu.Unlock()
-	var fields []byte
-	var err error
-
-	if len(log.Fields) == 0 {
-		text, err :=
-			log.Formatter.FormatMessage(
-				logger.Field{
-					Key:   "level",
-					Value: level.String(),
-				},
-				logger.Field{
-					Key:   "msg",
-					Value: fmt.Sprintf(format, opts...),
-				})
-		if err == nil {
-			(*log.Out).Write([]byte(text))
-			//	log.Hooks.Writer.Write([]byte(text))
-		}
+	var fieldsAll []logger.Field
+	fieldsAll = append(fieldsAll, logger.Field{
+		Key: "level", Value: level.String()},
+	)
+	for _, value := range log.Fields {
+		fieldsAll = append(fieldsAll, value)
 	}
-	if len(log.Fields) > 0 {
-		var fieldsAll string
-		for _, value := range log.Fields {
-			fields, err = log.Formatter.FormatFields(value)
-			if err != nil {
-				continue
-			}
-			fieldsAll = fieldsAll + string(fields)
-		}
+	fieldsAll = append(fieldsAll, logger.Field{
+		Key:   "msg",
+		Value: fmt.Sprintf(format, opts...),
+	})
 
-		levelType, _ := log.Formatter.FormatMessage(logger.Field{
-			Key:   "level",
-			Value: string(level),
-		})
+	text, _ := log.Formatter.FormatFields(fieldsAll...)
 
-		message, _ := log.Formatter.FormatMessage(logger.Field{
-			Key:   "msg",
-			Value: fmt.Sprintf(format, opts...),
-		})
+	(*log.Out).Write(text)
+	//log.Hooks.Fire(level, text)
+	//	log.Hooks.Writer.Close()
 
-		text := string(levelType) + fieldsAll + string(message)
-
-		(*log.Out).Write([]byte(text))
-		//	log.Hooks.Writer.Write([]byte(text))
-		//	log.Hooks.Writer.Close()
-		fmt.Println(text)
-	}
 }
 
 func (log *Logger) With(fields ...logger.Field) logger.Logger {
@@ -141,6 +113,10 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	log.Fields = temp
 
 	return l
+}
+
+func (log *Logger) AddHook(hook logger.Hook) {
+	log.Hooks.Add(hook)
 }
 
 func (log *Logger) clone() *Logger {

@@ -292,8 +292,8 @@ func TestLoggerWith(t *testing.T) {
 	result2 := make([]byte, buferSize)
 	buf := bytes.Buffer{}
 
-	hook, _ := logger.NewFileHook("logger1")
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf), logger.SetFileHook(*hook))
+	//hook, _ := logger.NewFileHook("logger1")
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, "test")
 	buf.Read(result)
 	buf.Reset()

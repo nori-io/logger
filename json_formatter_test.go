@@ -25,7 +25,7 @@ func TestErrorNotLost(t *testing.T) {
 	testField := loggerNoriCommon.Field{Key: "key1", Value: "value1"}
 
 	b, err := logTest1.Formatter.FormatFields(testField)
-	b2, _ := logTest1.Formatter.FormatMessage(loggerNoriCommon.Field{
+	b2, _ := logTest1.Formatter.FormatFields(loggerNoriCommon.Field{
 		Key:   "msg",
 		Value: fmt.Sprintf("test"),
 	})
