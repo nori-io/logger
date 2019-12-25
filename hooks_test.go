@@ -20,6 +20,7 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.AddHook(hook)
+	logTest1.Info("testInfo")
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
 

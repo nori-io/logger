@@ -48,7 +48,7 @@ func (hook *FileHook) Levels() []logger.Level {
 }
 func (hook *FileHook) Fire(fields ...logger.Field) error {
 
-	switch fields[0].Key {
+	switch fields[0].Value {
 	case logger.LevelPanic.String():
 		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelFatal.String():
