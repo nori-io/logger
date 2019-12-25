@@ -4,24 +4,15 @@ import (
 	"os"
 
 	"github.com/nori-io/nori-common/logger"
+	"github.com/sirupsen/logrus"
 )
 
-// A hook to be fired when logging on the logging levels returned from
-// `Levels()` on your implementation of the interface. Note that this is not
-// fired in a goroutine or a channel with workers, you should handle such
-// functionality yourself if your call is non-blocking and you don't wish for
-// the logging calls for levels returned from `Levels()` to block.
-type Hook interface {
-	Levels() []logger.Level
-	Fire(field []logger.Field) error
-}
-
 // Internal type for storing the hooks on a logger instance.
-type LevelHooks map[logger.Level][]Hook
+type LevelHooks map[logger.Level][]logger.Hook
 
 // Add a hook to an instance of logger. This is called with
 // `log.Hooks.Add(new(MyHook))` where `MyHook` implements the `Hook` interface.
-func (hooks LevelHooks) Add(hook Hook) {
+func (hooks LevelHooks) Add(hook logger.Hook) {
 	for _, level := range hook.Levels() {
 		hooks[level] = append(hooks[level], hook)
 	}
@@ -35,7 +26,6 @@ func (hooks LevelHooks) Fire(level logger.Level, log []logger.Field) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -43,13 +33,34 @@ type FileHook struct {
 	Writer *os.File
 }
 
-// Creates a hook to be added to an instance of logger. This is called with
-// `hook, err := NewFileHook("udp", "localhost:514", syslog.LOG_DEBUG, "")`
-// `if err == nil { log.Hooks.Add(hook) }`
 func NewFileHook(name string) (*FileHook, error) {
 	file, err := os.Create(name)
 	if err == nil {
 		return &FileHook{Writer: file}, err
 	}
 	return nil, err
+}
+
+func (hook *FileHook) Levels() []logger.Level {
+	return []logger.Level{logger.LevelFatal, logger.LevelPanic, logger.LevelNotice, logger.LevelCritical, logger.LevelError,
+		logger.LevelWarning, logger.LevelInfo, logger.LevelDebug}
+}
+func (hook *FileHook) Fire(fields ...logger.Field) error {
+
+	switch logger.Level.String(fields[0].Value){
+	case logger.LevelPanic.String():
+		return hook.Writer.Write([]byte(string(fields)))
+	case logger.LevelFatal.String():
+		return hook.Writer.Write([]byte(fields))
+	case logger.LevelError.String():
+		return hook.Writer.Write([]byte(fields))
+	case logger.LevelWarning.String():
+		return hook.Writer.Write([]byte(fields))
+	case logger.LevelInfo.String():
+		return hook.Writer.Write([]byte(fields))
+	case logger.LevelDebug.String(), logrus.TraceLevel.String():
+		return hook.Writer.Write([]byte(fields))
+	default:
+		return nil
+	}
 }

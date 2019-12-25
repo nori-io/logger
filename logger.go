@@ -26,7 +26,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks:     make(map[logger.Level][]Hook),
+		Hooks:     make(map[logger.Level][]logger.Hook),
 	}
 
 	return log.WithOptions(options...)
@@ -96,7 +96,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	text, _ := log.Formatter.FormatFields(fieldsAll...)
 
 	(*log.Out).Write(text)
-	//log.Hooks.Fire(level, text)
+	log.Hooks.Fire(level, fieldsAll)
 	//	log.Hooks.Writer.Close()
 
 }

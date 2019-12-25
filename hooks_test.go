@@ -2,7 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"log/syslog"
 	"testing"
 
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
@@ -14,15 +13,15 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 
 	buf := bytes.Buffer{}
 
-	//	hook, err := logger.NewFileHook("test_file")
+	hook, err := logger.NewFileHook("test_file")
+	if err != nil {
+		t.Errorf("Can't create hook")
+	}
 
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
-	//	logTest1.AddHook(&hook)
+	logTest1.AddHook(hook)
 	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
 	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
-	/*if err != nil {
-		t.Errorf("Can't create hook")
-	}*/
 
 	logTest2.Warning("done")
 
@@ -32,7 +31,7 @@ type TestHook struct {
 	Fired bool
 }
 
-func (hook *TestHook) Fire(fields []loggerNoriCommon.Field) error {
+/*func (hook *TestHook) Fire(fields []loggerNoriCommon.Field) error {
 	hook.Fired = true
 	return nil
 }
@@ -48,14 +47,14 @@ func (hook *TestHook) Levels() []loggerNoriCommon.Level {
 		loggerNoriCommon.LevelInfo,
 		loggerNoriCommon.LevelDebug,
 	}
-}
+}*/
 
-type SyslogHook struct {
+/*type SyslogHook struct {
 	Writer        *syslog.Writer
 	SyslogNetwork string
 	SyslogRaddr   string
 }
-
+*/
 /*func (hook *FileHook) Fire(entry *logrus.Entry) error {
 	line, err := entry.String()
 	if err != nil {
