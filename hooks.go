@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/nori-io/nori-common/logger"
@@ -22,7 +23,7 @@ func (hooks LevelHooks) Add(hook logger.Hook) {
 // appropriate hooks for a log entry.
 func (hooks LevelHooks) Fire(level logger.Level, log []logger.Field) error {
 	for _, hook := range hooks[level] {
-		if err := hook.Fire(log); err != nil {
+		if err := hook.Fire(log...); err != nil {
 			return err
 		}
 	}
@@ -47,20 +48,21 @@ func (hook *FileHook) Levels() []logger.Level {
 }
 func (hook *FileHook) Fire(fields ...logger.Field) error {
 
-	switch logger.Level.String(fields[0].Value){
+	switch fields[0].Key {
 	case logger.LevelPanic.String():
-		return hook.Writer.Write([]byte(string(fields)))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelFatal.String():
-		return hook.Writer.Write([]byte(fields))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelError.String():
-		return hook.Writer.Write([]byte(fields))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelWarning.String():
-		return hook.Writer.Write([]byte(fields))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelInfo.String():
-		return hook.Writer.Write([]byte(fields))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	case logger.LevelDebug.String(), logrus.TraceLevel.String():
-		return hook.Writer.Write([]byte(fields))
+		hook.Writer.Write([]byte(fmt.Sprint(fields)))
 	default:
 		return nil
 	}
+	return nil
 }
