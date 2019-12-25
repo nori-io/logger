@@ -2,7 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"database/sql/driver"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -14,7 +13,7 @@ import (
 	"github.com/nori-io/logger"
 )
 
-func TestLogger(t *testing.T) {
+func TestLogger_Log(t *testing.T) {
 	a := assert.New(t)
 	testData := "test"
 
@@ -24,11 +23,11 @@ func TestLogger(t *testing.T) {
 		Time  time.Time `json:"time"`
 	}
 
-	buferSize := 100
+	bufferSize := 100
 	buf := bytes.Buffer{}
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
-	result := make([]byte, buferSize)
+	result := make([]byte, bufferSize)
 	_, err := buf.Read(result)
 
 	decodedDataTest := new(decodedData)
@@ -42,55 +41,247 @@ func TestLogger(t *testing.T) {
 	a.Equal(testResult, decodedDataTest)
 	a.NoError(err)
 	buf.Reset()
+}
 
-	/*	testResult = "[FATAL]{\"Msg\":\"test\"}"
-		logTest1.Fatal("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testResult, string(result))
-		a.NoError(err)
-		buf.Reset()
+func TestLogger_Fatal(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
 
-		logTest1.Panic("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 
-		logTest1.Error("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+	logTest1.Fatal("%s", testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
 
-		logTest1.Critical("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "fatal",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
 
-		logTest1.Debug("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+func TestLogger_Panic(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
 
-		logTest1.Info("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 
-		logTest1.Notice("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()
+	logTest1.Panic(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
 
-		logTest1.Warning("%s", []byte(testData))
-		_, err = buf.Read(result)
-		a.Equal(testData, string(result))
-		a.NoError(err)
-		buf.Reset()*/
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "panic",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
+
+func TestLogger_Error(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Error(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "error",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
+
+func TestLogger_Critical(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Critical(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "critical",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+
+}
+
+func TestLogger_Debug(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Debug(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "debug",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
+
+func TestLogger_Info(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Info(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "info",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
+
+func TestLogger_Notice(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Notice(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "notice",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
+}
+
+func TestLogger_Warning(t *testing.T) {
+	a := assert.New(t)
+	testData := "test"
+	bufferSize := 110
+	buf := bytes.Buffer{}
+
+	type decodedData struct {
+		Level string    `json:"level"`
+		Msg   string    `json:"msg"`
+		Time  time.Time `json:"time"`
+	}
+	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+
+	logTest1.Warning(testData)
+	result := make([]byte, bufferSize)
+	_, err := buf.Read(result)
+
+	decodedDataTest := new(decodedData)
+	result = []byte(strings.TrimRight(string(result), "\x00"))
+	err = json.Unmarshal(result, &decodedDataTest)
+	testResult := &decodedData{
+		Level: "warning",
+		Msg:   "test",
+		Time:  decodedDataTest.Time,
+	}
+	a.Equal(testResult, decodedDataTest)
+	a.NoError(err)
+	buf.Reset()
 
 }
 
@@ -114,12 +305,4 @@ func TestLoggerWith(t *testing.T) {
 	a.Equal(false, string(result) == string(result2))
 
 	buf.Reset()
-}
-
-type AnyTime struct{}
-
-// Match satisfies sqlmock.Argument interface
-func (a AnyTime) Match(v driver.Value) bool {
-	_, ok := v.(time.Time)
-	return ok
 }

@@ -13,8 +13,9 @@ type Logger struct {
 	Mu        *sync.Mutex
 	Fields    []logger.Field
 	Formatter *JSONFormatter
-	Hooks     FileHook
+	Hooks     LevelHooks
 }
+
 type LevelEnabler interface {
 	Enabled(logger logger.Level) bool
 }
@@ -25,10 +26,9 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks: FileHook{
-			Writer: nil,
-		},
+		Hooks:     LevelHooks{},
 	}
+
 	return log.WithOptions(options...)
 }
 
@@ -97,7 +97,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 				})
 		if err == nil {
 			(*log.Out).Write([]byte(text))
-			log.Hooks.Writer.Write([]byte(text))
+			//	log.Hooks.Writer.Write([]byte(text))
 		}
 	}
 	if len(log.Fields) > 0 {
@@ -123,8 +123,8 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 		text := string(levelType) + fieldsAll + string(message)
 
 		(*log.Out).Write([]byte(text))
-		log.Hooks.Writer.Write([]byte(text))
-		log.Hooks.Writer.Close()
+		//	log.Hooks.Writer.Write([]byte(text))
+		//	log.Hooks.Writer.Close()
 		fmt.Println(text)
 	}
 }

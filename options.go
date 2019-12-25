@@ -43,7 +43,7 @@ func SetOutWriter(writer io.Writer) Option {
 
 func SetFileHook(hook FileHook) Option {
 	return optionFunc(func(log *Logger) {
-		log.Hooks = hook
+		//log.Hooks.Add(hook)
 	})
 }
 

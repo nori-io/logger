@@ -19,9 +19,7 @@ func TestErrorNotLost(t *testing.T) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]loggerNoriCommon.Field, 2),
 		Formatter: &logger.JSONFormatter{},
-		Hooks: logger.FileHook{
-			Writer: nil,
-		},
+		Hooks:     nil,
 	}
 
 	testField := loggerNoriCommon.Field{Key: "key1", Value: "value1"}
