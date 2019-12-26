@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -19,13 +20,13 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	buf := bytes.Buffer{}
 	a := assert.New(t)
 
-	hook, err := logger.NewFileHook("file_test")
+	hook, err := NewFileHookTest("","file_test")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
 
 	a.NoError(err)
-	hook2, err := logger.NewFileHook("file_test2")
+	hook2, err := NewFileHookTest("","file_test2")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
@@ -83,4 +84,12 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	a.Equal(rows[1], testData2)
 	a.Equal(rows[2], testData3)
 
+}
+
+func NewFileHookTest(path string, name string) (*logger.FileHook, error) {
+	file, err := ioutil.TempFile(path,name)
+	if err == nil {
+		return &logger.FileHook{Writer: file}, err
+	}
+	return nil, err
 }

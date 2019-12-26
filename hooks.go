@@ -32,7 +32,7 @@ type FileHook struct {
 	Writer *os.File
 }
 
-func NewFileHook(name string) (*FileHook, error) {
+func NewFileHook( name string) (*FileHook, error) {
 	file, err := os.Create(name)
 	if err == nil {
 		return &FileHook{Writer: file}, err
