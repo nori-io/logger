@@ -19,13 +19,13 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	buf := bytes.Buffer{}
 	a := assert.New(t)
 
-	hook, err := logger.NewFileHook("test_file")
+	hook, err := logger.NewFileHook("file_test")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
 
 	a.NoError(err)
-	hook2, err := logger.NewFileHook("test_file2")
+	hook2, err := logger.NewFileHook("file_test2")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
@@ -41,19 +41,19 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 
 	logTest2.Warning("done")
 
-	file1, err1 := os.Open("test_file")
+	fileTest1, err1 := os.Open("file_test")
 	if err1 != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer file1.Close()
+	defer fileTest1.Close()
 
 	testData := "{\"level\":\"info\",\"msg\":\"testInfo\"}\n"
 	testData2 := "{\"1\":\"test1\",\"2\":\"test2\",\"level\":\"info\",\"msg\":\"test\"}\n"
 	testData3 := "{\"1\":\"test1\",\"2\":\"test2\",\"level\":\"warning\",\"msg\":\"done\"}\n"
 
 	rows := make([]string, 3)
-	r := bufio.NewReader(file1)
+	r := bufio.NewReader(fileTest1)
 	for i := 0; i < 3; i++ {
 		rows[i], err = r.ReadString(10) //0x0A separator = newline
 		if err == io.EOF {
@@ -64,14 +64,14 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	a.Equal(rows[0], testData)
 	a.Equal(rows[1], testData2)
 	a.Equal(rows[2], testData3)
-	file2, err2 := os.Open("test_file2")
+	fileTest2, err2 := os.Open("file_test2")
 	if err2 != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer file1.Close()
+	defer fileTest2.Close()
 
-	r = bufio.NewReader(file2)
+	r = bufio.NewReader(fileTest2)
 	for i := 0; i < 3; i++ {
 		rows[i], err = r.ReadString(10) //0x0A separator = newline
 		if err == io.EOF {
