@@ -96,7 +96,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	text, _ := log.Formatter.FormatFields(fieldsAll...)
 
 	(*log.Out).Write(text)
-	log.Hooks.Fire(level, fieldsAll)
+	log.Hooks.Fire(level, text)
 	//	log.Hooks.Writer.Close()
 
 }
@@ -123,7 +123,6 @@ func (log *Logger) clone() *Logger {
 	copy := *log
 	return &copy
 }
-
 func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log

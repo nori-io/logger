@@ -1,11 +1,9 @@
 package logger
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/nori-io/nori-common/logger"
-	"github.com/sirupsen/logrus"
 )
 
 // Internal type for storing the hooks on a logger instance.
@@ -21,9 +19,9 @@ func (hooks LevelHooks) Add(hook logger.Hook) {
 
 // Fire all the hooks for the passed level. Used by `entry.log` to fire
 // appropriate hooks for a log entry.
-func (hooks LevelHooks) Fire(level logger.Level, log []logger.Field) error {
+func (hooks LevelHooks) Fire(level logger.Level, message []byte) error {
 	for _, hook := range hooks[level] {
-		if err := hook.Fire(log...); err != nil {
+		if err := hook.Fire(level, message); err != nil {
 			return err
 		}
 	}
@@ -46,21 +44,27 @@ func (hook *FileHook) Levels() []logger.Level {
 	return []logger.Level{logger.LevelFatal, logger.LevelPanic, logger.LevelNotice, logger.LevelCritical, logger.LevelError,
 		logger.LevelWarning, logger.LevelInfo, logger.LevelDebug}
 }
-func (hook *FileHook) Fire(fields ...logger.Field) error {
+func (hook *FileHook) Fire(level logger.Level, message []byte) error {
 
-	switch fields[0].Value {
-	case logger.LevelPanic.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
-	case logger.LevelFatal.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
-	case logger.LevelError.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
-	case logger.LevelWarning.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
-	case logger.LevelInfo.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
-	case logger.LevelDebug.String(), logrus.TraceLevel.String():
-		hook.Writer.Write([]byte(fmt.Sprint(fields)))
+	switch level {
+	case logger.LevelCritical:
+		hook.Writer.Write(message)
+	case logger.LevelDebug:
+		hook.Writer.Write(message)
+	case logger.LevelError:
+		hook.Writer.Write(message)
+	case logger.LevelFatal:
+		hook.Writer.Write(message)
+	case logger.LevelInfo:
+		hook.Writer.Write(message)
+	case logger.LevelNotice:
+		hook.Writer.Write(message)
+	case logger.LevelPanic:
+		hook.Writer.Write(message)
+
+	case logger.LevelWarning:
+		hook.Writer.Write(message)
+
 	default:
 		return nil
 	}
