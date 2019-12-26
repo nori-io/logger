@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
 )
@@ -12,15 +13,19 @@ import (
 func TestLocalhostAddAndPrint(t *testing.T) {
 
 	buf := bytes.Buffer{}
+	a := assert.New(t)
 
 	hook, err := logger.NewFileHook("test_file")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
+
+	a.NoError(err)
 	hook2, err := logger.NewFileHook("test_file2")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
+	a.NoError(err)
 
 	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
 	logTest1.AddHook(hook)
