@@ -29,8 +29,7 @@ func TestErrorNotLost(t *testing.T) {
 		Key:   "msg",
 		Value: fmt.Sprintf("test"),
 	})
-	fmt.Println("b", string(b))
-	fmt.Println("b2", string(b2))
+
 	type decodedData struct {
 		Key  string    `json:"key1"`
 		Time time.Time `json:"time"`
@@ -52,8 +51,5 @@ func TestErrorNotLost(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unable to unmarshal formatted entry: ", err)
 	}
-	fmt.Println("decodedDataTest", decodedDataTest)
-
-	fmt.Println("decodedDataTest", decodedDataTest2)
 
 }

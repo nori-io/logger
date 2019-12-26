@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -13,20 +12,21 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
+	logger2 "github.com/nori-io/logger/examples/hooks/filehook"
 )
 
-func TestLocalhostAddAndPrint(t *testing.T) {
+func TestFileHook(t *testing.T) {
 
 	buf := bytes.Buffer{}
 	a := assert.New(t)
 
-	hook, err := NewFileHookTest("","file_test")
+	hook, err := logger2.NewFileHookTest("", "file_test")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
 
 	a.NoError(err)
-	hook2, err := NewFileHookTest("","file_test2")
+	hook2, err := logger2.NewFileHookTest("", "file_test2")
 	if err != nil {
 		t.Errorf("Can't create hook")
 	}
@@ -44,10 +44,9 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 
 	fileTest1, err1 := os.Open("file_test")
 	if err1 != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer fileTest1.Close()
+	defer os.Remove(fileTest1.Name())
 
 	testData := "{\"level\":\"info\",\"msg\":\"testInfo\"}\n"
 	testData2 := "{\"1\":\"test1\",\"2\":\"test2\",\"level\":\"info\",\"msg\":\"test\"}\n"
@@ -57,6 +56,7 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	r := bufio.NewReader(fileTest1)
 	for i := 0; i < 3; i++ {
 		rows[i], err = r.ReadString(10) //0x0A separator = newline
+		fmt.Println("row", rows[i])
 		if err == io.EOF {
 			//do something here
 			break
@@ -70,7 +70,7 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer fileTest2.Close()
+	//defer os.Remove(fileTest2.Name())
 
 	r = bufio.NewReader(fileTest2)
 	for i := 0; i < 3; i++ {
@@ -84,12 +84,4 @@ func TestLocalhostAddAndPrint(t *testing.T) {
 	a.Equal(rows[1], testData2)
 	a.Equal(rows[2], testData3)
 
-}
-
-func NewFileHookTest(path string, name string) (*logger.FileHook, error) {
-	file, err := ioutil.TempFile(path,name)
-	if err == nil {
-		return &logger.FileHook{Writer: file}, err
-	}
-	return nil, err
 }

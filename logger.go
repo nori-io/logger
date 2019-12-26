@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"github.com/nori-io/nori-common/logger"
 )
@@ -91,6 +92,10 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	fieldsAll = append(fieldsAll, logger.Field{
 		Key:   "msg",
 		Value: fmt.Sprintf(format, opts...),
+	})
+	fieldsAll = append(fieldsAll, logger.Field{
+		Key:   "time",
+		Value: time.Now().Format(time.RFC3339Nano),
 	})
 
 	text, _ := log.Formatter.FormatFields(fieldsAll...)

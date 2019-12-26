@@ -10,7 +10,10 @@ import (
 
 type fieldKey string
 
-// FieldMap allows customization of the key names for default fields.
+type Formatter interface {
+	Format(field ...log.Field) ([]byte, error)
+}
+
 type FieldMap map[fieldKey]string
 
 func (f FieldMap) resolve(key fieldKey) string {
@@ -21,20 +24,9 @@ func (f FieldMap) resolve(key fieldKey) string {
 	return string(key)
 }
 
-// JSONFormatter formats logs into parsable json
 type JSONFormatter struct {
-	// TimestampFormat sets the format used for marshaling timestamps.
-	TimestampFormat string
-
-	// DisableTimestamp allows disabling automatic timestamps in output
-	DisableTimestamp bool
-
-	// DataKey allows users to put all the log entry parameters into a nested dictionary at a given key.
 	DataKey  string
 	FieldMap FieldMap
-
-	//  PrettyPrint will indent all json logs
-	PrettyPrint bool
 }
 
 func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
@@ -50,9 +42,7 @@ func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
 	b = &bytes.Buffer{}
 
 	encoder := json.NewEncoder(b)
-	if f.PrettyPrint {
-		encoder.SetIndent("", "  ")
-	}
+
 	if err := encoder.Encode(data); err != nil {
 		return nil, fmt.Errorf("Failed to marshal fields to JSON, %v", err)
 	}
