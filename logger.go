@@ -13,7 +13,7 @@ type Logger struct {
 	Mu        *sync.Mutex
 	Fields    []logger.Field
 	Formatter *JSONFormatter
-	Hooks     LevelHooks
+	Hooks     *LevelHooks
 }
 
 type LevelEnabler interface {
@@ -26,7 +26,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks:     make(map[logger.Level][]logger.Hook),
+		Hooks:     &LevelHooks{},
 	}
 
 	return log.WithOptions(options...)
@@ -97,7 +97,6 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 	(*log.Out).Write(text)
 	log.Hooks.Fire(level, text)
-	//	log.Hooks.Writer.Close()
 
 }
 
@@ -109,7 +108,6 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 
 	With(log, fields...)
 	l := log.clone()
-
 	log.Fields = temp
 
 	return l
@@ -127,8 +125,8 @@ func With(log *Logger, fields ...logger.Field) *Logger {
 
 	clone := log
 	clone.Fields = append(clone.Fields, fields...)
-	log = clone
-	return log
+	//log = clone
+	return clone
 }
 
 func (log *Logger) WithOptions(opts ...Option) *Logger {
