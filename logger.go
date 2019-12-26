@@ -97,12 +97,9 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 		Key:   "time",
 		Value: time.Now().Format(time.RFC3339Nano),
 	})
-
 	text, _ := log.Formatter.FormatFields(fieldsAll...)
-
 	(*log.Out).Write(text)
 	log.Hooks.Fire(level, text)
-
 }
 
 func (log *Logger) With(fields ...logger.Field) logger.Logger {
@@ -110,11 +107,9 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 		return log
 	}
 	temp := log.Fields
-
 	With(log, fields...)
 	l := log.clone()
 	log.Fields = temp
-
 	return l
 }
 
@@ -127,10 +122,8 @@ func (log *Logger) clone() *Logger {
 	return &copy
 }
 func With(log *Logger, fields ...logger.Field) *Logger {
-
 	clone := log
 	clone.Fields = append(clone.Fields, fields...)
-	//log = clone
 	return clone
 }
 
