@@ -20,7 +20,6 @@ func (f FieldMap) resolve(key fieldKey) string {
 	if k, ok := f[key]; ok {
 		return k
 	}
-
 	return string(key)
 }
 
@@ -30,22 +29,17 @@ type JSONFormatter struct {
 }
 
 func (f *JSONFormatter) FormatFields(fields ...log.Field) ([]byte, error) {
-
 	data := make(map[string]string, 1)
 	for _, v := range fields {
 
 		data[v.Key] = v.Value
 
 	}
-
 	var b *bytes.Buffer
 	b = &bytes.Buffer{}
-
 	encoder := json.NewEncoder(b)
-
 	if err := encoder.Encode(data); err != nil {
 		return nil, fmt.Errorf("Failed to marshal fields to JSON, %v", err)
 	}
-
 	return b.Bytes(), nil
 }

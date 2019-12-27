@@ -23,8 +23,8 @@ func (hook *FileHook) Levels() []logger.Level {
 	return []logger.Level{logger.LevelFatal, logger.LevelPanic, logger.LevelNotice, logger.LevelCritical, logger.LevelError,
 		logger.LevelWarning, logger.LevelInfo, logger.LevelDebug}
 }
-func (hook *FileHook) Fire(level logger.Level, message []byte) error {
 
+func (hook *FileHook) Fire(level logger.Level, message []byte) error {
 	switch level {
 	case logger.LevelCritical:
 		hook.Writer.Write(message)
@@ -40,15 +40,14 @@ func (hook *FileHook) Fire(level logger.Level, message []byte) error {
 		hook.Writer.Write(message)
 	case logger.LevelPanic:
 		hook.Writer.Write(message)
-
 	case logger.LevelWarning:
 		hook.Writer.Write(message)
-
 	default:
 		return nil
 	}
 	return nil
 }
+
 func NewFileHookTest(path string, name string) (*FileHook, error) {
 	file, err := ioutil.TempFile(path, name)
 	if err == nil {
