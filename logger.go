@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"io"
+	"os"
 	"sync"
 	"time"
 
@@ -30,7 +31,15 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Hooks:     &LevelHooks{},
 	}
 
-	return log.WithOptions(options...)
+	log = log.WithOptions(options...)
+	if log.Out == nil {
+		log = log.WithOptions(SetOutWriter(os.Stderr))
+	}
+	if log.Formatter == nil {
+		log = log.WithOptions(SetJsonFormatter())
+	}
+
+	return
 }
 
 // Fatal
