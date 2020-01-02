@@ -10,10 +10,10 @@ import (
 )
 
 type Logger struct {
-	Out       *io.Writer
+	Out       io.Writer
 	Mu        *sync.Mutex
 	Fields    []logger.Field
-	Formatter *JSONFormatter
+	Formatter logger.Formatter
 	Hooks     *LevelHooks
 }
 
@@ -80,25 +80,16 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 
 // Log push to log with specified level
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
-	log.Mu.Lock()
 	defer log.Mu.Unlock()
-	var fieldsAll []logger.Field
-	fieldsAll = append(fieldsAll, logger.Field{
-		Key: "level", Value: level.String()},
-	)
-	for _, value := range log.Fields {
-		fieldsAll = append(fieldsAll, value)
-	}
-	fieldsAll = append(fieldsAll, logger.Field{
-		Key:   "msg",
-		Value: fmt.Sprintf(format, opts...),
-	})
-	fieldsAll = append(fieldsAll, logger.Field{
-		Key:   "time",
-		Value: time.Now().Format(time.RFC3339Nano),
-	})
-	text, _ := log.Formatter.FormatFields(fieldsAll...)
-	(*log.Out).Write(text)
+
+	// format output
+	text, _ := log.Formatter.Format(fmt.Sprintf(format, opts...), time.Now().Format(time.RFC3339Nano), log.Fields...)
+
+	// output
+	log.Mu.Lock()
+	log.Out.Write(text)
+
+	// fire hooks
 	log.Hooks.Fire(level, text)
 }
 
@@ -106,10 +97,8 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	if len(fields) == 0 {
 		return log
 	}
-	temp := log.Fields
-	With(log, fields...)
 	l := log.clone()
-	log.Fields = temp
+	l.Fields = append(log.Fields, fields...)
 	return l
 }
 
@@ -121,6 +110,7 @@ func (log *Logger) clone() *Logger {
 	copy := *log
 	return &copy
 }
+
 func With(log *Logger, fields ...logger.Field) *Logger {
 	clone := log
 	clone.Fields = append(clone.Fields, fields...)

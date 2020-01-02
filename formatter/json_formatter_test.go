@@ -1,4 +1,4 @@
-package logger_test
+package formatter_test
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 
 	loggerNoriCommon "github.com/nori-io/nori-common/logger"
 
-	"github.com/nori-io/logger"
+	logger "github.com/nori-io/logger/formatter/json"
 )
 
 func TestErrorNotLost(t *testing.T) {
@@ -18,7 +18,7 @@ func TestErrorNotLost(t *testing.T) {
 		Out:       nil,
 		Mu:        &sync.Mutex{},
 		Fields:    make([]loggerNoriCommon.Field, 2),
-		Formatter: &logger.JSONFormatter{},
+		Formatter: &JSONFormatter{},
 		Hooks:     nil,
 	}
 

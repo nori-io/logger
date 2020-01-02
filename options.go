@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"github.com/nori-io/logger/formatter"
 	"io"
+
 )
 
 type Option interface {
@@ -16,15 +18,12 @@ func (f optionFunc) apply(log *Logger) {
 
 func SetJsonFormatter() Option {
 	return optionFunc(func(log *Logger) {
-		log.Formatter = &JSONFormatter{
-			DataKey:  "",
-			FieldMap: nil,
-		}
+		log.Formatter = &formatter.JSONFormatter{}
 	})
 }
 
 func SetOutWriter(writer io.Writer) Option {
 	return optionFunc(func(log *Logger) {
-		log.Out = &writer
+		log.Out = writer
 	})
 }
