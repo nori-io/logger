@@ -2,54 +2,59 @@ package formatter_test
 
 import (
 	"encoding/json"
-	"fmt"
-	"sync"
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/nori-common/logger"
+	"github.com/nori-io/logger/formatter"
+	"github.com/stretchr/testify/assert"
 
-	logger "github.com/nori-io/logger/formatter/json"
+	"github.com/nori-io/nori-common/logger"
 )
 
-func TestErrorNotLost(t *testing.T) {
+func TestJSONFormatter_Format(t *testing.T) {
+	a := assert.New(t)
 
-	logTest1 := &logger.Logger{
-		Out:       nil,
-		Mu:        &sync.Mutex{},
-		Fields:    make([]loggerNoriCommon.Field, 2),
-		Formatter: &JSONFormatter{},
-		Hooks:     nil,
+	type dataOne struct {
+		Level     string `json:"level"`
+		Msg       string `json:"msg"`
+		Ts        int64  `json:"ts"`
+		Component string `json:"component"`
 	}
 
-	testField := loggerNoriCommon.Field{Key: "key1", Value: "value1"}
+	level := logger.LevelInfo
+	msg := "foo"
+	ts := time.Now()
+	key := "component"
+	value := "test"
 
-	b, err := logTest1.Formatter.FormatFields(testField)
-	b2, _ := logTest1.Formatter.FormatFields(loggerNoriCommon.Field{
-		Key:   "msg",
-		Value: fmt.Sprintf("test"),
+	exp1 := dataOne{
+		Level:     level.String(),
+		Msg:       msg,
+		Ts:        ts.UnixNano(),
+		Component: value,
+	}
+
+	f := formatter.JSONFormatter{}
+
+	b, err := f.Format(logger.Entry{
+		Level:   level,
+		Time:    ts,
+		Message: msg,
+	}, logger.Field{
+		Key:   key,
+		Value: value,
 	})
 
-	type decodedData struct {
-		Key  string    `json:"key1"`
-		Time time.Time `json:"time"`
-	}
-	type decodedData2 struct {
-		Msg  string    `json:"msg"`
-		Time time.Time `json:"time"`
+	if err != nil {
+		t.Fatal("formatter.Format returned error: " + err.Error())
 	}
 
-	decodedDataTest := new(decodedData)
-	decodedDataTest2 := new(decodedData2)
-
-	err = json.Unmarshal(b, &decodedDataTest)
+	var src1 = new(dataOne)
+	err = json.Unmarshal(b, src1)
 	if err != nil {
 		t.Fatal("Unable to unmarshal formatted entry: ", err)
 	}
+	t.Log(string(b))
 
-	err = json.Unmarshal(b2, &decodedDataTest2)
-	if err != nil {
-		t.Fatal("Unable to unmarshal formatted entry: ", err)
-	}
-
+	a.EqualValues(exp1, *src1)
 }

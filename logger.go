@@ -32,14 +32,19 @@ func New(options ...Option) (loggerNew logger.Logger) {
 	}
 
 	log = log.WithOptions(options...)
+
+	opts := []Option{}
 	if log.Out == nil {
-		log = log.WithOptions(SetOutWriter(os.Stderr))
+		opts = append(opts, SetOutWriter(os.Stderr))
 	}
 	if log.Formatter == nil {
-		log = log.WithOptions(SetJsonFormatter())
+		opts = append(opts, SetJsonFormatter())
+	}
+	if len(opts) > 0 {
+		return log.WithOptions(opts...)
 	}
 
-	return
+	return log
 }
 
 // Fatal
@@ -92,7 +97,11 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	defer log.Mu.Unlock()
 
 	// format output
-	text, _ := log.Formatter.Format(fmt.Sprintf(format, opts...), time.Now().Format(time.RFC3339Nano), log.Fields...)
+	text, _ := log.Formatter.Format(logger.Entry{
+		Level:   level,
+		Time:    time.Now(),
+		Message: fmt.Sprintf(format, opts...),
+	}, log.Fields...)
 
 	// output
 	log.Mu.Lock()
@@ -115,21 +124,15 @@ func (log *Logger) AddHook(hook logger.Hook) {
 	log.Hooks.Add(hook)
 }
 
-func (log *Logger) clone() *Logger {
-	copy := *log
-	return &copy
-}
-
-func With(log *Logger, fields ...logger.Field) *Logger {
-	clone := log
-	clone.Fields = append(clone.Fields, fields...)
-	return clone
-}
-
 func (log *Logger) WithOptions(opts ...Option) *Logger {
 	c := log.clone()
 	for _, opt := range opts {
 		opt.apply(c)
 	}
 	return c
+}
+
+func (log *Logger) clone() *Logger {
+	copy := *log
+	return &copy
 }

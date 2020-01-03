@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -17,27 +18,36 @@ import (
 )
 
 func TestFileHook(t *testing.T) {
+	a := assert.New(t)
+
+	tmpFile, err := ioutil.TempFile("", "file_hook")
+	defer os.Remove(tmpFile.Name()) // clean up
+
+	hook, err := logger2.NewFileHook(tmpFile.Name())
+	a.NoError(err, "Can't create hook")
+
+	var (
+		msg     = "foo bar"
+		msg2    = "lorem ipsum"
+		warning = "warn"
+		key1    = "one"
+		key2    = "two"
+		val1    = "1"
+		val2    = "2"
+	)
 
 	buf := bytes.Buffer{}
-	a := assert.New(t)
-	hook, err := logger2.NewFileHook("file_test")
-	if err != nil {
-		t.Errorf("Can't create hook")
-	}
-	a.NoError(err)
+	log1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	log1.AddHook(hook)
+	log1.Info(msg)
+	log2 := log1.With(loggerNoriCommon.Field{Key: key1, Value: val1}, loggerNoriCommon.Field{Key: key2, Value: val2})
+	log2.Log(loggerNoriCommon.LevelInfo, msg2)
+	log2.Warning(warning)
 
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
-	logTest1.AddHook(hook)
-	logTest1.Info("testInfo")
-	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
-	logTest2.Warning("done")
-
-	fileTest1, err1 := os.Open(hook.Writer.Name())
+	file1, err1 := os.Open(tmpFile.Name())
 	if err1 != nil {
 		os.Exit(1)
 	}
-	defer os.Remove(hook.Writer.Name())
 
 	type decodedData struct {
 		Level string    `json:"level"`
@@ -45,8 +55,8 @@ func TestFileHook(t *testing.T) {
 		Time  time.Time `json:"time"`
 	}
 	type decodedData2 struct {
-		Num1  string    `json:"1"`
-		Num2  string    `json:"2"`
+		One   string    `json:"one"`
+		Two   string    `json:"two"`
 		Level string    `json:"level"`
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
@@ -55,132 +65,50 @@ func TestFileHook(t *testing.T) {
 	decodedDataTest2 := new(decodedData2)
 
 	testData1 := decodedData{
-		Level: "info",
-		Msg:   "testInfo",
+		Level: loggerNoriCommon.LevelInfo.String(),
+		Msg:   msg,
 		Time:  time.Time{},
 	}
 	testData2 := decodedData2{
-		Num1:  "test1",
-		Num2:  "test2",
+		One:   val1,
+		Two:   val2,
 		Level: "info",
-		Msg:   "test",
+		Msg:   msg2,
 		Time:  time.Time{},
 	}
 	testData3 := decodedData2{
-		Num1:  "test1",
-		Num2:  "test2",
-		Level: "warning",
-		Msg:   "done",
+		One:   val1,
+		Two:   val2,
+		Level: loggerNoriCommon.LevelWarning.String(),
+		Msg:   warning,
 		Time:  time.Time{},
 	}
 
 	rows := make([]string, 3)
-	r := bufio.NewReader(fileTest1)
+	r := bufio.NewReader(file1)
 	for i := 0; i < 3; i++ {
-		rows[i], err = r.ReadString(10)
+		rows[i], err = r.ReadString('\n')
 		if err == io.EOF {
 			break
 		}
 	}
 	err = json.Unmarshal([]byte(rows[0]), &decodedDataTest)
 	a.NoError(err)
-	a.Equal(decodedDataTest.Level, testData1.Level)
-	a.Equal(decodedDataTest.Msg, testData1.Msg)
+	a.Equal(testData1.Level, decodedDataTest.Level)
+	a.Equal(testData1.Msg, decodedDataTest.Msg)
 
 	err = json.Unmarshal([]byte(rows[1]), &decodedDataTest2)
 	a.NoError(err)
-	a.Equal(decodedDataTest2.Level, testData2.Level)
-	a.Equal(decodedDataTest2.Msg, testData2.Msg)
-	a.Equal(decodedDataTest2.Num1, testData2.Num1)
-	a.Equal(decodedDataTest2.Num2, testData2.Num2)
+	a.Equal(testData2.Level, decodedDataTest2.Level)
+	a.Equal(testData2.Msg, decodedDataTest2.Msg)
+	a.Equal(testData2.One, decodedDataTest2.One)
+	a.Equal(testData2.Two, decodedDataTest2.Two)
 
 	err = json.Unmarshal([]byte(rows[2]), &decodedDataTest2)
 	a.NoError(err)
-	a.Equal(decodedDataTest2.Level, testData3.Level)
-	a.Equal(decodedDataTest2.Msg, testData3.Msg)
-	a.Equal(decodedDataTest2.Num1, testData3.Num1)
-	a.Equal(decodedDataTest2.Num2, testData3.Num2)
+	a.Equal(testData3.Level, decodedDataTest2.Level)
+	a.Equal(testData3.Msg, decodedDataTest2.Msg)
+	a.Equal(testData3.One, decodedDataTest2.One)
+	a.Equal(testData3.Two, decodedDataTest2.Two)
 
-}
-
-func TestTmpFileHook(t *testing.T) {
-	buf := bytes.Buffer{}
-	a := assert.New(t)
-	hook, err := logger2.NewFileHookTest("", "file_test")
-	defer os.Remove(hook.Writer.Name())
-	if err != nil {
-		t.Errorf("Can't create hook")
-	}
-	a.NoError(err)
-
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
-	logTest1.AddHook(hook)
-	logTest1.Info("testInfo")
-	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
-	logTest2.Warning("done")
-
-	rows := make([]string, 3)
-	file, err := os.Open(hook.Writer.Name())
-	r := bufio.NewReader(file)
-	for i := 0; i < 3; i++ {
-		rows[i], err = r.ReadString(10)
-		if err == io.EOF {
-			break
-		}
-	}
-
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	type decodedData2 struct {
-		Num1  string    `json:"1"`
-		Num2  string    `json:"2"`
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-
-	decodedDataTest := new(decodedData)
-	decodedDataTest2 := new(decodedData2)
-	testData1 := decodedData{
-		Level: "info",
-		Msg:   "testInfo",
-		Time:  time.Time{},
-	}
-	testData2 := decodedData2{
-		Num1:  "test1",
-		Num2:  "test2",
-		Level: "info",
-		Msg:   "test",
-		Time:  time.Time{},
-	}
-	testData3 := decodedData2{
-		Num1:  "test1",
-		Num2:  "test2",
-		Level: "warning",
-		Msg:   "done",
-		Time:  time.Time{},
-	}
-
-	err = json.Unmarshal([]byte(rows[0]), &decodedDataTest)
-	a.NoError(err)
-	a.Equal(decodedDataTest.Level, testData1.Level)
-	a.Equal(decodedDataTest.Msg, testData1.Msg)
-
-	err = json.Unmarshal([]byte(rows[1]), &decodedDataTest2)
-	a.NoError(err)
-	a.Equal(decodedDataTest2.Level, testData2.Level)
-	a.Equal(decodedDataTest2.Msg, testData2.Msg)
-	a.Equal(decodedDataTest2.Num1, testData2.Num1)
-	a.Equal(decodedDataTest2.Num2, testData2.Num2)
-
-	err = json.Unmarshal([]byte(rows[2]), &decodedDataTest2)
-	a.NoError(err)
-	a.Equal(decodedDataTest2.Level, testData3.Level)
-	a.Equal(decodedDataTest2.Msg, testData3.Msg)
-	a.Equal(decodedDataTest2.Num1, testData3.Num1)
-	a.Equal(decodedDataTest2.Num2, testData3.Num2)
 }

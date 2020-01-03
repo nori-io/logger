@@ -9,6 +9,10 @@ github.com/nori-io/nori-common v1.1.1-0.20200102050915-e1a0ec65448a h1:/p9DVKnOp
 github.com/nori-io/nori-common v1.1.1-0.20200102050915-e1a0ec65448a/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
 github.com/nori-io/nori-common v1.1.1-0.20200102051605-73b60c56ac2d h1:3NU/JS0O9Ri+/zDRCKarOWtW52HQM9NfKCNLRPeMtG8=
 github.com/nori-io/nori-common v1.1.1-0.20200102051605-73b60c56ac2d/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
+github.com/nori-io/nori-common v1.1.1-0.20200103133140-593db3e85e2f h1:WFcNnjPyxGNfNIuPEod3TZhs+VBMMZjC53zHbGzl3Ao=
+github.com/nori-io/nori-common v1.1.1-0.20200103133140-593db3e85e2f/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
+github.com/nori-io/nori-common v1.1.1-0.20200103134810-fec7a7ec6d39 h1:vx+bCeLTSmAzrfEjoYEJYGdecZIgq2Igis+G/686NfQ=
+github.com/nori-io/nori-common v1.1.1-0.20200103134810-fec7a7ec6d39/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
