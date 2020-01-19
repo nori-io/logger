@@ -1,4 +1,4 @@
-package logger
+package types
 
 import (
 	"github.com/nori-io/nori-common/logger"
@@ -12,9 +12,9 @@ func (hooks LevelHooks) Add(hook logger.Hook) {
 	}
 }
 
-func (hooks LevelHooks) Fire(level logger.Level, message []byte) error {
+func (hooks LevelHooks) Fire(level logger.Level, fields ...logger.Field) error {
 	for _, hook := range hooks[level] {
-		if err := hook.Fire(level, message); err != nil {
+		if err := hook.Fire(level, fields...); err != nil {
 			return err
 		}
 	}

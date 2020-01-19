@@ -1,11 +1,10 @@
-package formatter_test
+package formatters_test
 
 import (
 	"encoding/json"
 	"testing"
 	"time"
 
-	"github.com/nori-io/logger/formatter"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/nori-common/logger"
@@ -34,7 +33,7 @@ func TestJSONFormatter_Format(t *testing.T) {
 		Component: value,
 	}
 
-	f := formatter.JSONFormatter{}
+	f := JSONFormatter{}
 
 	b, err := f.Format(logger.Entry{
 		Level:   level,
@@ -54,7 +53,6 @@ func TestJSONFormatter_Format(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unable to unmarshal formatted entry: ", err)
 	}
-	t.Log(string(b))
 
 	a.EqualValues(exp1, *src1)
 }

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nori-io/logger/internal/types"
 	"github.com/nori-io/nori-common/logger"
 )
 
@@ -15,7 +16,7 @@ type Logger struct {
 	Mu        *sync.Mutex
 	Fields    []logger.Field
 	Formatter logger.Formatter
-	Hooks     *LevelHooks
+	Hooks     *types.LevelHooks
 }
 
 type LevelEnabler interface {
@@ -28,7 +29,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		Mu:        &sync.Mutex{},
 		Fields:    make([]logger.Field, 0),
 		Formatter: nil,
-		Hooks:     &LevelHooks{},
+		Hooks:     &types.LevelHooks{},
 	}
 
 	log = log.WithOptions(options...)
@@ -50,13 +51,11 @@ func New(options ...Option) (loggerNew logger.Logger) {
 // Fatal
 func (log *Logger) Panic(format string, opts ...interface{}) {
 	log.Log(logger.LevelPanic, format, opts...)
-
 }
 
 // Fatal logs a message with fatal level and exit with status set to 1
 func (log *Logger) Fatal(format string, opts ...interface{}) {
 	log.Log(logger.LevelFatal, format, opts...)
-
 }
 
 // Critical push to log entry with critical level
@@ -67,19 +66,16 @@ func (log *Logger) Critical(format string, opts ...interface{}) {
 // Error push to log entry with error level
 func (log *Logger) Error(format string, opts ...interface{}) {
 	log.Log(logger.LevelError, format, opts...)
-
 }
 
 // Warning push to log entry with warning level
 func (log *Logger) Warning(format string, opts ...interface{}) {
 	log.Log(logger.LevelWarning, format, opts...)
-
 }
 
 // Notice push to log entry with notice level
 func (log *Logger) Notice(format string, opts ...interface{}) {
 	log.Log(logger.LevelNotice, format, opts...)
-
 }
 
 // Info push to log entry with info level
@@ -94,8 +90,6 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 
 // Log push to log with specified level
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
-	defer log.Mu.Unlock()
-
 	// format output
 	text, _ := log.Formatter.Format(logger.Entry{
 		Level:   level,
@@ -105,6 +99,8 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 	// output
 	log.Mu.Lock()
+	defer log.Mu.Unlock()
+
 	log.Out.Write(text)
 
 	// fire hooks

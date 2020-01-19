@@ -1,5 +1,6 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/golang/mock v1.3.1/go.mod h1:sBzyDLLjw3U8JLTeZvSv8jJB+tU5PVekmnlKIyFUx0Y=
 github.com/hashicorp/go-version v1.2.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/nori-io/nori-common v1.1.1-0.20191226071111-c9851e7c7eab h1:N6ca5RF0WjRQaMQ/RPK7CRvqtGSObtI83YFQ/GM1TAI=
 github.com/nori-io/nori-common v1.1.1-0.20191226071111-c9851e7c7eab/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
@@ -15,8 +16,20 @@ github.com/nori-io/nori-common v1.1.1-0.20200103134810-fec7a7ec6d39 h1:vx+bCeLTS
 github.com/nori-io/nori-common v1.1.1-0.20200103134810-fec7a7ec6d39/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
 github.com/nori-io/nori-common v1.1.1-0.20200104040158-39579dc186ee h1:/ejdat1gskRxqAljsFGJzCXDpbgBLsmh9awIPtcUePQ=
 github.com/nori-io/nori-common v1.1.1-0.20200104040158-39579dc186ee/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
+github.com/nori-io/nori-common v1.1.1-0.20200118194605-ccaf96a592de h1:87J/z5K5NzxVCBUmMXFoFB+Ogpur/an+DQGg+PYgq0I=
+github.com/nori-io/nori-common v1.1.1-0.20200118194605-ccaf96a592de/go.mod h1:HgfkHG1EDKKQBjYhGfJiEN/O5h09e8gWdTja0IBhnzc=
+github.com/nori-io/nori-common v1.1.1-0.20200118215511-24106f89e9b2 h1:cb2u34sX52Luo0AkOHwQAWG68fj6V5CUDu9B1qFfPgM=
+github.com/nori-io/nori-common v1.1.1-0.20200118215511-24106f89e9b2/go.mod h1:nvJb4ceH9AmVrqkyKnCQJBTQHcsnjk1OPhp8B+80p9c=
+github.com/nori-io/nori-common v1.1.1-0.20200119055353-7fc78d8bcba8 h1:nJBBWB+2XnQbBRg27YkZlsCoXwpZBy+q2/g9FoBfFzI=
+github.com/nori-io/nori-common v1.1.1-0.20200119055353-7fc78d8bcba8/go.mod h1:nvJb4ceH9AmVrqkyKnCQJBTQHcsnjk1OPhp8B+80p9c=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
+golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+golang.org/x/net v0.0.0-20190311183353-d8887717615a/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
+golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
+golang.org/x/tools v0.0.0-20190425150028-36563e24a262/go.mod h1:RgjU9mgBXZiqYHBnxXauZ1Gv1EHHAz9KjViQ78xBX0Q=

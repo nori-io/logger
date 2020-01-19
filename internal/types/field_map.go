@@ -1,4 +1,4 @@
-package logger
+package types
 
 type fieldKey string
 
@@ -10,4 +10,3 @@ func (f FieldMap) resolve(key fieldKey) string {
 	}
 	return string(key)
 }
-
