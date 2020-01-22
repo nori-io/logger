@@ -1,9 +1,10 @@
 package logger
 
 import (
+	"bytes"
 	"os"
 
-	"github.com/nori-io/nori-common/logger"
+	"github.com/nori-io/nori-common/v2/logger"
 )
 
 type FileHook struct {
@@ -23,10 +24,14 @@ func (hook *FileHook) Levels() []logger.Level {
 		logger.LevelWarning, logger.LevelInfo}
 }
 
-func (hook *FileHook) Fire(level logger.Level, message []byte) error {
-	if level == logger.LevelDebug {
+func (hook *FileHook) Fire(entry logger.Entry, field ...logger.Field) error {
+	if entry.Level == logger.LevelDebug {
 		return nil
 	}
-	_, err := hook.Writer.Write(message)
+
+	b := bytes.Buffer{}
+	out, _ := entry.Formatter.Format(entry, field...)
+	b.Write(out)
+	_, err := hook.Writer.Write(b.Bytes())
 	return err
 }

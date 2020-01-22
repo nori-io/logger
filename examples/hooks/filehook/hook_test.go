@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/nori-common/logger"
+	loggerNoriCommon "github.com/nori-io/nori-common/v2/logger"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
@@ -29,7 +29,7 @@ func TestFileHook(t *testing.T) {
 	var (
 		msg     = "foo bar"
 		msg2    = "lorem ipsum"
-		warning = "warn"
+		warning = "warning"
 		key1    = "one"
 		key2    = "two"
 		val1    = "1"
@@ -37,7 +37,7 @@ func TestFileHook(t *testing.T) {
 	)
 
 	buf := bytes.Buffer{}
-	log1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	log1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 	log1.AddHook(hook)
 	log1.Info(msg)
 	log2 := log1.With(loggerNoriCommon.Field{Key: key1, Value: val1}, loggerNoriCommon.Field{Key: key2, Value: val2})
@@ -52,14 +52,14 @@ func TestFileHook(t *testing.T) {
 	type decodedData struct {
 		Level string    `json:"level"`
 		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
+		Time  time.Time `json:"ts"`
 	}
 	type decodedData2 struct {
 		One   string    `json:"one"`
 		Two   string    `json:"two"`
 		Level string    `json:"level"`
 		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
+		Time  time.Time `json:"ts"`
 	}
 	decodedDataTest := new(decodedData)
 	decodedDataTest2 := new(decodedData2)
@@ -72,7 +72,7 @@ func TestFileHook(t *testing.T) {
 	testData2 := decodedData2{
 		One:   val1,
 		Two:   val2,
-		Level: "info",
+		Level: loggerNoriCommon.LevelInfo.String(),
 		Msg:   msg2,
 		Time:  time.Time{},
 	}

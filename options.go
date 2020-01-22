@@ -2,6 +2,7 @@ package logger
 
 import (
 	"io"
+	"time"
 
 	"github.com/nori-io/logger/pkg/formatters"
 )
@@ -16,9 +17,14 @@ func (f optionFunc) apply(log *Logger) {
 	f(log)
 }
 
-func SetJsonFormatter() Option {
+func SetJsonFormatter(timeFormat string) Option {
+	if timeFormat == "" {
+		timeFormat = time.RFC3339
+	}
 	return optionFunc(func(log *Logger) {
-		log.Formatter = &formatters.JSONFormatter{}
+		log.Formatter = &formatters.JSONFormatter{
+			TimeFormat: timeFormat,
+		}
 	})
 }
 

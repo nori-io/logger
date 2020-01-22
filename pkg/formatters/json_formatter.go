@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/nori-io/nori-common/logger"
+	"github.com/nori-io/nori-common/v2/logger"
 )
 
-type JSONFormatter struct{}
+type JSONFormatter struct {
+	TimeFormat string
+}
 
 func (f *JSONFormatter) Format(entry logger.Entry, fields ...logger.Field) ([]byte, error) {
 	data := make(map[string]interface{}, len(fields)+3)
@@ -16,7 +18,7 @@ func (f *JSONFormatter) Format(entry logger.Entry, fields ...logger.Field) ([]by
 		data[v.Key] = v.Value
 	}
 	data["level"] = entry.Level.String()
-	data["ts"] = entry.Time.UnixNano()
+	data["ts"] = entry.Time.Format(f.TimeFormat)
 	data["msg"] = entry.Message
 
 	var b *bytes.Buffer

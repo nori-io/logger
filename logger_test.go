@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/nori-common/logger"
+	loggerNoriCommon "github.com/nori-io/nori-common/v2/logger"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
@@ -25,7 +25,7 @@ func TestLogger_Log(t *testing.T) {
 
 	bufferSize := 100
 	buf := bytes.Buffer{}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
 	result := make([]byte, bufferSize)
 	_, err := buf.Read(result)
@@ -54,7 +54,7 @@ func TestLogger_Fatal(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Fatal("%s", testData)
 	result := make([]byte, bufferSize)
@@ -84,7 +84,7 @@ func TestLogger_Panic(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Panic(testData)
 	result := make([]byte, bufferSize)
@@ -114,7 +114,7 @@ func TestLogger_Error(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Error(testData)
 	result := make([]byte, bufferSize)
@@ -144,7 +144,7 @@ func TestLogger_Critical(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Critical(testData)
 	result := make([]byte, bufferSize)
@@ -175,7 +175,7 @@ func TestLogger_Debug(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Debug(testData)
 	result := make([]byte, bufferSize)
@@ -205,7 +205,7 @@ func TestLogger_Info(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Info(testData)
 	result := make([]byte, bufferSize)
@@ -235,7 +235,7 @@ func TestLogger_Notice(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Notice(testData)
 	result := make([]byte, bufferSize)
@@ -265,7 +265,7 @@ func TestLogger_Warning(t *testing.T) {
 		Msg   string    `json:"msg"`
 		Time  time.Time `json:"time"`
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
 	logTest1.Warning(testData)
 	result := make([]byte, bufferSize)
@@ -292,7 +292,7 @@ func TestLoggerWith(t *testing.T) {
 	result2 := make([]byte, buferSize)
 	buf := bytes.Buffer{}
 
-	logTest1 := logger.New(logger.SetJsonFormatter(), logger.SetOutWriter(&buf))
+	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 	logTest1.Log(loggerNoriCommon.LevelInfo, "test")
 	buf.Read(result)
 	buf.Reset()

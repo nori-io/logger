@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/nori-io/logger/internal/types"
-	"github.com/nori-io/nori-common/logger"
+	"github.com/nori-io/nori-common/v2/logger"
 )
 
 type Logger struct {
@@ -39,7 +39,7 @@ func New(options ...Option) (loggerNew logger.Logger) {
 		opts = append(opts, SetOutWriter(os.Stderr))
 	}
 	if log.Formatter == nil {
-		opts = append(opts, SetJsonFormatter())
+		opts = append(opts, SetJsonFormatter(""))
 	}
 	if len(opts) > 0 {
 		return log.WithOptions(opts...)
@@ -90,12 +90,14 @@ func (log *Logger) Debug(format string, opts ...interface{}) {
 
 // Log push to log with specified level
 func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
+	entry := logger.Entry{
+		Formatter: log.Formatter,
+		Level:     level,
+		Time:      time.Now(),
+		Message:   fmt.Sprintf(format, opts...),
+	}
 	// format output
-	text, _ := log.Formatter.Format(logger.Entry{
-		Level:   level,
-		Time:    time.Now(),
-		Message: fmt.Sprintf(format, opts...),
-	}, log.Fields...)
+	text, _ := log.Formatter.Format(entry, log.Fields...)
 
 	// output
 	log.Mu.Lock()
@@ -104,7 +106,7 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 	log.Out.Write(text)
 
 	// fire hooks
-	log.Hooks.Fire(level, text)
+	log.Hooks.Fire(entry, log.Fields...)
 }
 
 func (log *Logger) With(fields ...logger.Field) logger.Logger {
@@ -116,16 +118,16 @@ func (log *Logger) With(fields ...logger.Field) logger.Logger {
 	return l
 }
 
-func (log *Logger) AddHook(hook logger.Hook) {
-	log.Hooks.Add(hook)
-}
-
 func (log *Logger) WithOptions(opts ...Option) *Logger {
 	c := log.clone()
 	for _, opt := range opts {
 		opt.apply(c)
 	}
 	return c
+}
+
+func (log *Logger) AddHook(hook logger.Hook) {
+	log.Hooks.Add(hook)
 }
 
 func (log *Logger) clone() *Logger {
