@@ -1,4 +1,4 @@
-package logger
+package lib
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ type FileHook struct {
 }
 
 func NewFileHook(name string) (logger.Hook, error) {
-	file, err := os.Create(name)
+	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err == nil {
 		return &FileHook{Writer: file}, err
 	}

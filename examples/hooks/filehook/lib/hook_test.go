@@ -1,4 +1,4 @@
-package logger_test
+package lib_test
 
 import (
 	"bufio"
@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
-	logger2 "github.com/nori-io/logger/examples/hooks/filehook"
 )
 
 func TestFileHook(t *testing.T) {
@@ -23,7 +22,7 @@ func TestFileHook(t *testing.T) {
 	tmpFile, err := ioutil.TempFile("", "file_hook")
 	defer os.Remove(tmpFile.Name()) // clean up
 
-	hook, err := logger2.NewFileHook(tmpFile.Name())
+	hook, err := NewFileHook(tmpFile.Name())
 	a.NoError(err, "Can't create hook")
 
 	var (
