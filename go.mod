@@ -1,6 +1,6 @@
 module github.com/nori-io/logger
 
-go 1.13
+go 1.14
 
 require (
 	github.com/nori-io/common/v3 v3.0.0
