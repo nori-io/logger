@@ -8,7 +8,7 @@ import (
 	"github.com/nori-io/logger/pkg/formatters"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nori-io/nori-common/v2/logger"
+	"github.com/nori-io/common/v3/logger"
 )
 
 func TestJSONFormatter_Format(t *testing.T) {

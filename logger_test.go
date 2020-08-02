@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/nori-common/v2/logger"
+	loggerNoriCommon "github.com/nori-io/common/v3/logger"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"

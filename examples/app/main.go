@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
+	logger2 "github.com/nori-io/common/v3/logger"
 	"github.com/nori-io/logger"
-	logger2 "github.com/nori-io/nori-common/v2/logger"
 )
 
 func main() {

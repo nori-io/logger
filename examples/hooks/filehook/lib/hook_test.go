@@ -10,7 +10,8 @@ import (
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/nori-common/v2/logger"
+	logger2 "github.com/nori-io/common/v3/logger"
+	"github.com/nori-io/logger/examples/hooks/filehook/lib"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nori-io/logger"
@@ -22,7 +23,7 @@ func TestFileHook(t *testing.T) {
 	tmpFile, err := ioutil.TempFile("", "file_hook")
 	defer os.Remove(tmpFile.Name()) // clean up
 
-	hook, err := NewFileHook(tmpFile.Name())
+	hook, err := lib.NewFileHook(tmpFile.Name())
 	a.NoError(err, "Can't create hook")
 
 	var (
@@ -39,8 +40,8 @@ func TestFileHook(t *testing.T) {
 	log1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 	log1.AddHook(hook)
 	log1.Info(msg)
-	log2 := log1.With(loggerNoriCommon.Field{Key: key1, Value: val1}, loggerNoriCommon.Field{Key: key2, Value: val2})
-	log2.Log(loggerNoriCommon.LevelInfo, msg2)
+	log2 := log1.With(logger2.Field{Key: key1, Value: val1}, logger2.Field{Key: key2, Value: val2})
+	log2.Log(logger2.LevelInfo, msg2)
 	log2.Warning(warning)
 
 	file1, err1 := os.Open(tmpFile.Name())
@@ -64,21 +65,21 @@ func TestFileHook(t *testing.T) {
 	decodedDataTest2 := new(decodedData2)
 
 	testData1 := decodedData{
-		Level: loggerNoriCommon.LevelInfo.String(),
+		Level: logger2.LevelInfo.String(),
 		Msg:   msg,
 		Time:  time.Time{},
 	}
 	testData2 := decodedData2{
 		One:   val1,
 		Two:   val2,
-		Level: loggerNoriCommon.LevelInfo.String(),
+		Level: logger2.LevelInfo.String(),
 		Msg:   msg2,
 		Time:  time.Time{},
 	}
 	testData3 := decodedData2{
 		One:   val1,
 		Two:   val2,
-		Level: loggerNoriCommon.LevelWarning.String(),
+		Level: logger2.LevelWarning.String(),
 		Msg:   warning,
 		Time:  time.Time{},
 	}

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/nori-io/nori-common/v2/logger"
+	"github.com/nori-io/common/v3/logger"
 )
 
 type JSONFormatter struct {

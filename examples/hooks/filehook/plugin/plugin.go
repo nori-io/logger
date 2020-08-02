@@ -5,10 +5,10 @@ import (
 	"context"
 	"os"
 
-	"github.com/nori-io/nori-common/v2/config"
-	"github.com/nori-io/nori-common/v2/logger"
-	"github.com/nori-io/nori-common/v2/meta"
-	"github.com/nori-io/nori-common/v2/plugin"
+	"github.com/nori-io/common/v3/config"
+	"github.com/nori-io/common/v3/logger"
+	"github.com/nori-io/common/v3/meta"
+	"github.com/nori-io/common/v3/plugin"
 )
 
 type service struct {
@@ -21,7 +21,7 @@ type instance struct {
 }
 
 var (
-	Plugin service
+	Plugin plugin.Plugin = &service{}
 )
 
 func (p *service) Init(_ context.Context, config config.Config, log logger.FieldLogger) error {
@@ -48,16 +48,19 @@ func (p service) Meta() meta.Meta {
 			VersionConstraint: "=0.2.0",
 		},
 		Dependencies: []meta.Dependency{},
-		Description:  meta.Description{},
-		Interface:    meta.NewInterface("core/logger/Hook", "1.0.0"), // todo: replace
+		Description: meta.Description{
+			Name:        "Test File Hook Plugin",
+			Description: "This is a tets plugin for development and testing purpose",
+		},
+		Interface: logger.HookInterface,
 		License: []meta.License{
 			{
-				Title: "",
+				Title: "GPLv3",
 				Type:  "GPLv3",
 				URI:   "https://www.gnu.org/licenses/",
 			},
 		},
-		Tags: []string{"hook", "hooks", "logger", "nori"},
+		Tags: []string{"hook", "file_hook"},
 	}
 }
 
