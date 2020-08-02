@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nori-io/common/v3/logger"
 	"github.com/nori-io/logger/internal/types"
-	"github.com/nori-io/nori-common/v2/logger"
 )
 
 type Logger struct {

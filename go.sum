@@ -1,9 +1,10 @@
+github.com/Masterminds/semver/v3 v3.0.3 h1:znjIyLfpXEDQjOIEWh+ehwpTU14UzUPub3c3sm36u14=
+github.com/Masterminds/semver/v3 v3.0.3/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/mock v1.3.1/go.mod h1:sBzyDLLjw3U8JLTeZvSv8jJB+tU5PVekmnlKIyFUx0Y=
-github.com/hashicorp/go-version v1.2.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
-github.com/nori-io/nori-common/v2 v2.0.0 h1:NJO2S2h8gd6+2JXAujwqFwNEh/Y0O1juNyVBhYvYpLE=
-github.com/nori-io/nori-common/v2 v2.0.0/go.mod h1:WkAnHHNec/QQligW4aDKY4jZeDiK37AZOLzBEV1FcKI=
+github.com/nori-io/common/v3 v3.0.0 h1:5Qa40t9EL1tqD1j8RgK9fOI/ydMqhVoZYZZVGFo64I8=
+github.com/nori-io/common/v3 v3.0.0/go.mod h1:xWpo27B7goqoWOSIEt/FZnxDaWhBkzowQ625/whGT80=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
