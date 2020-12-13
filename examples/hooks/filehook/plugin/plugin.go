@@ -6,9 +6,12 @@ import (
 	"os"
 
 	"github.com/nori-io/common/v4/pkg/domain/config"
+	enum "github.com/nori-io/common/v4/pkg/domain/enum/meta"
 	"github.com/nori-io/common/v4/pkg/domain/logger"
 	"github.com/nori-io/common/v4/pkg/domain/meta"
 	"github.com/nori-io/common/v4/pkg/domain/plugin"
+	"github.com/nori-io/common/v4/pkg/domain/registry"
+	metadata "github.com/nori-io/common/v4/pkg/meta"
 )
 
 type service struct {
@@ -35,42 +38,39 @@ func (p *service) Instance() interface{} {
 }
 
 func (p service) Meta() meta.Meta {
-	return &meta.Data{
-		ID: meta.ID{
+	return &metadata.Meta{
+		ID: metadata.ID{
 			ID:      "nori/logger/Hook",
 			Version: "1.0.0",
 		},
-		Author: meta.Author{
+		Author: metadata.Author{
 			Name: "Nori.io",
-			URI:  "https://nori.io/",
-		},
-		Core: meta.Core{
-			VersionConstraint: "=0.2.0",
+			URL:  "https://nori.io/",
 		},
 		Dependencies: []meta.Dependency{},
-		Description: meta.Description{
-			Name:        "Test File Hook Plugin",
+		Description: metadata.Description{
+			Title:       "Test File Hook Plugin",
 			Description: "This is a tets plugin for development and testing purpose",
 		},
 		Interface: logger.HookInterface,
 		License: []meta.License{
-			{
+			metadata.License{
 				Title: "GPLv3",
-				Type:  "GPLv3",
-				URI:   "https://www.gnu.org/licenses/",
+				Type:  enum.GPLv3,
+				URL:   "https://www.gnu.org/licenses/",
 			},
 		},
 		Tags: []string{"hook", "file_hook"},
 	}
 }
 
-func (p service) Start(ctx context.Context, registry plugin.Registry) error {
+func (p service) Start(ctx context.Context, registry registry.Registry) error {
 	var err error
 	p.instance.writer, err = os.OpenFile(p.instance.Path(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	return err
 }
 
-func (p service) Stop(ctx context.Context, registry plugin.Registry) error {
+func (p service) Stop(ctx context.Context, registry registry.Registry) error {
 	return p.instance.writer.Close()
 }
 
