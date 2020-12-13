@@ -3,7 +3,7 @@ package logger
 import (
 	"sync"
 
-	"github.com/nori-io/common/v3/logger"
+	"github.com/nori-io/common/v4/pkg/domain/logger"
 )
 
 var (

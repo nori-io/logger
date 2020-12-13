@@ -3,305 +3,252 @@ package logger_test
 import (
 	"bytes"
 	"encoding/json"
+	"os"
+	"os/exec"
 	"strings"
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/common/v3/logger"
-	"github.com/stretchr/testify/assert"
-
+	loggerNoriCommon "github.com/nori-io/common/v4/pkg/domain/logger"
 	"github.com/nori-io/logger"
+	"github.com/stretchr/testify/assert"
 )
+
+type decodedData struct {
+	Level string    `json:"level"`
+	Msg   string    `json:"msg"`
+	Time  time.Time `json:"time"`
+}
 
 func TestLogger_Log(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
+	var (
+		data = &decodedData{
+			Level: "info",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	bufferSize := 100
-	buf := bytes.Buffer{}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
-	logTest1.Log(loggerNoriCommon.LevelInfo, testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	l.Log(loggerNoriCommon.LevelInfo, data.Msg)
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "info",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
+	data.Time = decoded.Time
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Fatal(t *testing.T) {
-	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
-
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
+	if os.Getenv("BE_FATAL") == "1" {
+		l := logger.New()
+		l.Fatal("%s", "fatal")
+		return
 	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
-
-	logTest1.Fatal("%s", testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
-
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "fatal",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
+	cmd := exec.Command(os.Args[0], "-test.run=TestLogger_Fatal")
+	cmd.Env = append(os.Environ(), "BE_FATAL=1")
+	err := cmd.Run()
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		return
 	}
-	a.Equal(testResult, decodedDataTest)
-	a.NoError(err)
-	buf.Reset()
+	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
 func TestLogger_Panic(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "panic",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Panic(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "panic",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	var recovered interface{}
+	func() {
+		defer func() {
+			recovered = recover()
+		}()
+		l.Panic(data.Msg)
+	}()
+	a.NotNil(recovered)
+
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
+
+	data.Time = decoded.Time
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Error(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "error",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Error(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "error",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	l.Error(data.Msg)
+
+	record := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(record, decoded)
 	a.NoError(err)
-	buf.Reset()
+
+	data.Time = decoded.Time
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Critical(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
+	var (
+		data = &decodedData{
+			Level: "critical",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	logTest1.Critical(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l.Critical(data.Msg)
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "critical",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
 
+	data.Time = decoded.Time
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Debug(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "debug",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Debug(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "debug",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	l.Debug(data.Msg)
+
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
+
+	data.Time = decoded.Time
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Info(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "info",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Info(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "info",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	l.Info(data.Msg)
+
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Notice(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "notice",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Notice(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "notice",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	l.Notice(data.Msg)
+
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
+
+	a.Equal(data, decoded)
 }
 
 func TestLogger_Warning(t *testing.T) {
 	a := assert.New(t)
-	testData := "test"
-	bufferSize := 110
-	buf := bytes.Buffer{}
 
-	type decodedData struct {
-		Level string    `json:"level"`
-		Msg   string    `json:"msg"`
-		Time  time.Time `json:"time"`
-	}
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	var (
+		data = &decodedData{
+			Level: "warning",
+			Msg:   "test",
+		}
+		decoded = &decodedData{}
+		buf     = bytes.Buffer{}
+	)
 
-	logTest1.Warning(testData)
-	result := make([]byte, bufferSize)
-	_, err := buf.Read(result)
+	l := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
 
-	decodedDataTest := new(decodedData)
-	result = []byte(strings.TrimRight(string(result), "\x00"))
-	err = json.Unmarshal(result, &decodedDataTest)
-	testResult := &decodedData{
-		Level: "warning",
-		Msg:   "test",
-		Time:  decodedDataTest.Time,
-	}
-	a.Equal(testResult, decodedDataTest)
+	l.Warning(data.Msg)
+
+	result := []byte(strings.TrimRight(buf.String(), "\x00"))
+	err := json.Unmarshal(result, &decoded)
 	a.NoError(err)
-	buf.Reset()
 
+	a.Equal(data, decoded)
 }
 
 func TestLoggerWith(t *testing.T) {
 	a := assert.New(t)
-	buferSize := 250
-	result := make([]byte, buferSize)
-	result2 := make([]byte, buferSize)
-	buf := bytes.Buffer{}
 
-	logTest1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
-	logTest1.Log(loggerNoriCommon.LevelInfo, "test")
-	buf.Read(result)
+	var (
+		buf        = bytes.Buffer{}
+		recA, recB string
+	)
+
+	l1 := logger.New(logger.SetJsonFormatter(""), logger.SetOutWriter(&buf))
+	l1.Log(loggerNoriCommon.LevelInfo, "test")
+	recA = buf.String()
 	buf.Reset()
 
-	logTest2 := logTest1.With(loggerNoriCommon.Field{Key: "1", Value: "test1"}, loggerNoriCommon.Field{Key: "2", Value: "test2"})
-	logTest2.Log(loggerNoriCommon.LevelInfo, "test")
-	buf.Read(result2)
-	a.Equal(false, &logTest1 == &logTest2)
-	a.Equal(false, string(result) == string(result2))
+	l2 := l1.With(loggerNoriCommon.Field{Key: "foo", Value: "bar"}, loggerNoriCommon.Field{Key: "key", Value: "value"})
+	l2.Log(loggerNoriCommon.LevelInfo, "test")
+	recB = buf.String()
 
-	buf.Reset()
+	a.False(&l1 == &l2)
+	a.NotEqual(recA, recB)
 }

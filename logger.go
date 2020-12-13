@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nori-io/common/v3/logger"
+	"github.com/nori-io/common/v4/pkg/domain/logger"
 	"github.com/nori-io/logger/internal/types"
 )
 
@@ -107,6 +107,13 @@ func (log *Logger) Log(level logger.Level, format string, opts ...interface{}) {
 
 	// fire hooks
 	log.Hooks.Fire(entry, log.Fields...)
+
+	switch level {
+	case logger.LevelFatal:
+		os.Exit(1)
+	case logger.LevelPanic:
+		panic(text)
+	}
 }
 
 func (log *Logger) With(fields ...logger.Field) logger.Logger {
