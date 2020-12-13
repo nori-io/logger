@@ -25,7 +25,7 @@ func TestLogger_Log(t *testing.T) {
 
 	var (
 		data = &decodedData{
-			Level: "error",
+			Level: "info",
 			Msg:   "test",
 		}
 		decoded = &decodedData{}
