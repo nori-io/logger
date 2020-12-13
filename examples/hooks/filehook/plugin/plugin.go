@@ -5,10 +5,10 @@ import (
 	"context"
 	"os"
 
-	"github.com/nori-io/common/v3/config"
-	"github.com/nori-io/common/v3/logger"
-	"github.com/nori-io/common/v3/meta"
-	"github.com/nori-io/common/v3/plugin"
+	"github.com/nori-io/common/v4/pkg/domain/config"
+	"github.com/nori-io/common/v4/pkg/domain/logger"
+	"github.com/nori-io/common/v4/pkg/domain/meta"
+	"github.com/nori-io/common/v4/pkg/domain/plugin"
 )
 
 type service struct {
