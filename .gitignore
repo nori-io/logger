@@ -13,6 +13,7 @@ vendor
 
 # Output of the go coverage tool
 *.out
+coverage.txt
 
 # Idea
 .idea
