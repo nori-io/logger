@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/nori-io/common/v4/pkg/domain/logger"
+	"github.com/nori-io/common/v5/pkg/domain/logger"
 )
 
 type LevelHooks map[logger.Level][]logger.Hook

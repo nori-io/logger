@@ -5,13 +5,13 @@ import (
 	"context"
 	"os"
 
-	"github.com/nori-io/common/v4/pkg/domain/config"
-	enum "github.com/nori-io/common/v4/pkg/domain/enum/meta"
-	"github.com/nori-io/common/v4/pkg/domain/logger"
-	"github.com/nori-io/common/v4/pkg/domain/meta"
-	"github.com/nori-io/common/v4/pkg/domain/plugin"
-	"github.com/nori-io/common/v4/pkg/domain/registry"
-	metadata "github.com/nori-io/common/v4/pkg/meta"
+	"github.com/nori-io/common/v5/pkg/domain/config"
+	enum "github.com/nori-io/common/v5/pkg/domain/enum/meta"
+	"github.com/nori-io/common/v5/pkg/domain/logger"
+	"github.com/nori-io/common/v5/pkg/domain/meta"
+	"github.com/nori-io/common/v5/pkg/domain/plugin"
+	"github.com/nori-io/common/v5/pkg/domain/registry"
+	metadata "github.com/nori-io/common/v5/pkg/meta"
 )
 
 type service struct {

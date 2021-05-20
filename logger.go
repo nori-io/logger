@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nori-io/common/v4/pkg/domain/logger"
+	"github.com/nori-io/common/v5/pkg/domain/logger"
 	"github.com/nori-io/logger/internal/types"
 )
 
