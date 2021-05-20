@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"os"
 
-	"github.com/nori-io/common/v4/pkg/domain/logger"
+	"github.com/nori-io/common/v5/pkg/domain/logger"
 )
 
 type FileHook struct {

@@ -1,8 +1,8 @@
 module github.com/nori-io/logger
 
-go 1.15
+go 1.16
 
 require (
-	github.com/nori-io/common/v4 v4.0.0
-	github.com/stretchr/testify v1.6.1
+	github.com/nori-io/common/v5 v5.0.0
+	github.com/stretchr/testify v1.7.0
 )

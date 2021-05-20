@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	loggerNoriCommon "github.com/nori-io/common/v4/pkg/domain/logger"
+	loggerNoriCommon "github.com/nori-io/common/v5/pkg/domain/logger"
 	"github.com/nori-io/logger"
 	"github.com/stretchr/testify/assert"
 )
